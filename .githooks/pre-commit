@@ -1,7 +1,9 @@
 #!/bin/sh
 set -eu
 
-blocked_names="$(git diff --cached --name-only | grep -E '(^|/)\.env($|\.)|(^|/)config\.json$|(^|/)\.pycursor/' || true)"
+blocked_names="$(git diff --cached --name-only \
+    | grep -E '(^|/)\.env($|\.)|(^|/)config\.json$|(^|/)\.pycursor/' \
+    | grep -v '\.env\.example$' || true)"
 if [ -n "$blocked_names" ]; then
     echo "Commit blocked: environment, config, or session files are staged:" >&2
     echo "$blocked_names" >&2
