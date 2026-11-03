@@ -1,0 +1,22 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unittest:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Reject committed secrets
+        shell: pwsh
+        run: |
+          if (Get-ChildItem -Recurse -Force -File | Where-Object { $_.Name -match '^\.env($|\.)' -and $_.Name -ne '.env.example' }) {
+            throw "Environment file found in repository"
+          }
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
