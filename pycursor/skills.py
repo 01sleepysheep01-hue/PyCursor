@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
@@ -33,6 +34,37 @@ class SkillDocument:
     body: str
     metadata: dict[str, str] = field(default_factory=dict)
     source: Path | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class LoadedSkill:
+    document: SkillDocument
+    directory: Path
+    has_scripts: bool
+    uses_mcp: bool
+
+    @property
+    def name(self) -> str:
+        return self.document.name
+
+    @property
+    def description(self) -> str:
+        return self.document.description
+
+
+@dataclass(frozen=True, slots=True)
+class SkillRegistry:
+    root: Path
+    skills: tuple[LoadedSkill, ...]
+
+    def get(self, name: str) -> LoadedSkill:
+        for skill in self.skills:
+            if skill.name == name:
+                return skill
+        raise KeyError(f"未知技能：{name}")
+
+    def __len__(self) -> int:
+        return len(self.skills)
 
 
 def skills_enabled() -> bool:
@@ -233,3 +265,127 @@ def write_default_skill(project_root: Path | str | None = None) -> Path:
     skill_dir.mkdir(parents=True, exist_ok=True)
     target.write_text(render_skill_template(), encoding="utf-8")
     return target
+
+
+def load_skills(project_root: Path | str | None = None) -> SkillRegistry:
+    """
+    扫描 project_root/skills/*/SKILL.md。
+
+    ENABLE_SKILLS=0 时直接返回空注册表，保持旧版行为。
+    """
+    root = Path(project_root or Path.cwd()).expanduser().resolve()
+    if not skills_enabled():
+        return SkillRegistry(root=root, skills=())
+
+    skills_root = (root / "skills").resolve()
+    if not skills_root.is_dir():
+        return SkillRegistry(root=root, skills=())
+
+    loaded: list[LoadedSkill] = []
+    seen_names: set[str] = set()
+
+    for skill_dir in sorted(skills_root.iterdir(), key=lambda path: path.name):
+        if not skill_dir.is_dir() or skill_dir.name.startswith("."):
+            continue
+
+        resolved_dir = skill_dir.resolve()
+        try:
+            resolved_dir.relative_to(skills_root)
+        except ValueError as exc:
+            raise SkillError(
+                f"技能目录不能指向 skills/ 之外：{skill_dir}"
+            ) from exc
+
+        skill_path = resolved_dir / "SKILL.md"
+        if not skill_path.is_file():
+            raise SkillError(f"技能目录缺少 SKILL.md：{resolved_dir}")
+
+        try:
+            text = skill_path.read_text(encoding="utf-8")
+        except UnicodeDecodeError as exc:
+            raise SkillError(f"SKILL.md 不是 UTF-8：{skill_path}") from exc
+
+        document = parse_skill_document(text, source=skill_path)
+        if document.name != resolved_dir.name:
+            raise SkillError(
+                "技能 name 必须与目录名一致："
+                f"{resolved_dir.name!r} != {document.name!r}"
+            )
+
+        duplicate_key = document.name.casefold()
+        if duplicate_key in seen_names:
+            raise SkillError(f"发现重复技能名称：{document.name}")
+        seen_names.add(duplicate_key)
+
+        has_scripts = (resolved_dir / "scripts").is_dir()
+        uses_mcp = (
+            document.metadata.get("uses_mcp", "").strip().lower()
+            in {"1", "true", "yes", "on"}
+            or re.search(
+                r"\bmcp\b",
+                f"{document.description}\n{document.body}",
+                flags=re.IGNORECASE,
+            )
+            is not None
+        )
+        loaded.append(
+            LoadedSkill(
+                document=document,
+                directory=resolved_dir,
+                has_scripts=has_scripts,
+                uses_mcp=uses_mcp,
+            )
+        )
+
+    return SkillRegistry(root=root, skills=tuple(loaded))
+
+
+def skill_catalog_lines(registry: SkillRegistry) -> list[str]:
+    lines: list[str] = []
+    for skill in registry.skills:
+        markers: list[str] = []
+        if skill.has_scripts:
+            markers.append("scripts")
+        if skill.uses_mcp:
+            markers.append("mcp")
+        suffix = f" [{'/'.join(markers)}]" if markers else ""
+        lines.append(f"{skill.name}: {skill.description}{suffix}")
+    return lines
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Inspect PyCursor skills")
+    parser.add_argument("--root", default=".", help="项目根目录")
+    parser.add_argument("--json", action="store_true", help="输出 JSON")
+    args = parser.parse_args(argv)
+
+    registry = load_skills(args.root)
+    if args.json:
+        payload = {
+            "enabled": skills_enabled(),
+            "root": str(registry.root),
+            "skills": [
+                {
+                    "name": skill.name,
+                    "description": skill.description,
+                    "has_scripts": skill.has_scripts,
+                    "uses_mcp": skill.uses_mcp,
+                    "path": str(skill.document.source),
+                }
+                for skill in registry.skills
+            ],
+        }
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    elif not skills_enabled():
+        print("Skills disabled: ENABLE_SKILLS=0")
+    elif not registry.skills:
+        print("No skills found.")
+    else:
+        print(f"Found {len(registry.skills)} skill(s):")
+        for line in skill_catalog_lines(registry):
+            print(f"- {line}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
