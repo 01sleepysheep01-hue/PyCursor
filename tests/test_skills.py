@@ -10,8 +10,10 @@ from unittest.mock import patch
 from pycursor.skills import (
     SkillDisabledError,
     SkillError,
+    load_skills,
     parse_skill_document,
     render_skill_template,
+    skill_catalog_lines,
     skills_enabled,
     write_default_skill,
 )
@@ -90,6 +92,62 @@ class SkillsParserTest(unittest.TestCase):
             parse_skill_document(
                 "---\nname: run-tests\ndescription: test\n---\n# body"
             )
+
+    def test_load_skills_from_project(self) -> None:
+        registry = load_skills(self.root)
+        self.assertEqual(len(registry), 1)
+        self.assertEqual(registry.skills[0].name, "run-tests")
+        self.assertFalse(registry.skills[0].has_scripts)
+        self.assertFalse(registry.skills[0].uses_mcp)
+        self.assertIn("run-tests:", skill_catalog_lines(registry)[0])
+
+    def test_loader_detects_scripts_directory(self) -> None:
+        target = self.workspace / "skills" / "review-diff" / "SKILL.md"
+        target.parent.mkdir(parents=True)
+        (target.parent / "scripts").mkdir()
+        target.write_text(
+            "---\n"
+            "name: review-diff\n"
+            "description: Review a git diff. Use this when 用户要求审查 diff。\n"
+            "---\n"
+            "## 怎么算做完了\n"
+            "- 已给出结论\n",
+            encoding="utf-8",
+        )
+        registry = load_skills(self.workspace)
+        self.assertTrue(registry.skills[0].has_scripts)
+
+    def test_loader_detects_mcp_usage(self) -> None:
+        target = self.workspace / "skills" / "fetch-issue" / "SKILL.md"
+        target.parent.mkdir(parents=True)
+        target.write_text(
+            "---\n"
+            "name: fetch-issue\n"
+            "description: Fetch an issue through MCP. Use this when 用户要求读取 issue。\n"
+            "---\n"
+            "## 怎么算做完了\n"
+            "- 已返回 issue 内容\n",
+            encoding="utf-8",
+        )
+        registry = load_skills(self.workspace)
+        self.assertTrue(registry.skills[0].uses_mcp)
+
+    def test_loader_rejects_name_directory_mismatch(self) -> None:
+        target = self.workspace / "skills" / "wrong-directory" / "SKILL.md"
+        target.parent.mkdir(parents=True)
+        target.write_text(render_skill_template(), encoding="utf-8")
+        with self.assertRaisesRegex(SkillError, "必须与目录名一致"):
+            load_skills(self.workspace)
+
+    def test_loader_requires_skill_file(self) -> None:
+        (self.workspace / "skills" / "empty-skill").mkdir(parents=True)
+        with self.assertRaisesRegex(SkillError, "缺少 SKILL.md"):
+            load_skills(self.workspace)
+
+    def test_loader_returns_empty_when_disabled(self) -> None:
+        with patch.dict(os.environ, {"ENABLE_SKILLS": "0"}):
+            registry = load_skills(self.root)
+        self.assertEqual(len(registry), 0)
 
     def test_disabled_switch(self) -> None:
         text = render_skill_template()
