@@ -1,0 +1,2 @@
+"""PyCursor test suite."""
+

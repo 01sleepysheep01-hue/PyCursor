@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "demo": {
+      "command": "${PYTHON_OR_APP}",
+      "args": ["mcp_servers/demo_server.py"],
+      "cwd": ".",
+      "enabled": true
+    }
+  }
+}
+

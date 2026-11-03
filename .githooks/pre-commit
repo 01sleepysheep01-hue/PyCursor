@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+blocked_names="$(git diff --cached --name-only | grep -E '(^|/)\.env($|\.)|(^|/)config\.json$|(^|/)\.pycursor/' || true)"
+if [ -n "$blocked_names" ]; then
+    echo "Commit blocked: environment, config, or session files are staged:" >&2
+    echo "$blocked_names" >&2
+    exit 1
+fi
+
+if git grep --cached -I -E 'sk-[A-Za-z0-9_-]{20,}' -- . ':!.env.example' >/dev/null 2>&1; then
+    echo "Commit blocked: a likely API key is present in staged files." >&2
+    exit 1
+fi
+
+exit 0

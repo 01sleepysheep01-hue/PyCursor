@@ -1,0 +1,9 @@
+;!@Install@!UTF-8!
+Title=PyCursor 1.0.0
+Text=Install PyCursor for the current Windows user.
+Setup=<Hide>setup.cmd
+TempMode
+Silent=1
+Overwrite=1
+;!@InstallEnd@!
+
