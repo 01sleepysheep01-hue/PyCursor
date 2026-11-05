@@ -10,6 +10,7 @@ from typing import Any, Protocol
 from .config import Settings
 from .llm import ChatReply, LLMError, OpenAICompatibleClient
 from .mcp import MCPManager
+from .skills import SkillRegistry, load_skills, skill_catalog_lines
 from .tools import (
     TOOL_SCHEMAS,
     ToolContext,
@@ -31,6 +32,29 @@ SYSTEM_PROMPT = """你是 PyCursor，一名在用户本地工作区工作的编�
 7. 最终答复使用用户所用语言，简明说明改动、验证命令与仍存在的风险。
 8. 只有当任务确实完成或明确无法继续时才停止调用工具。
 """
+
+
+USE_SKILL_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "use_skill",
+        "description": (
+            "按名称加载一个技能的完整操作说明。"
+            "仅当当前任务匹配技能目录中的 description 时调用。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "技能目录中的技能名称，例如 run-tests。",
+                }
+            },
+            "required": ["name"],
+            "additionalProperties": False,
+        },
+    },
+}
 
 
 class ChatClient(Protocol):
@@ -69,10 +93,16 @@ class AgentRunner:
         *,
         client: ChatClient | None = None,
         mcp: MCPManager | None = None,
+        skills: SkillRegistry | None = None,
     ) -> None:
         self.settings = settings
         self.client = client or OpenAICompatibleClient(settings)
         self.mcp = mcp
+        self.skills = (
+            skills
+            if skills is not None
+            else load_skills(self.settings.workspace)
+        )
 
     def run(
         self,
@@ -86,7 +116,7 @@ class AgentRunner:
         started = time.monotonic()
         trace: list[str] = []
         messages: list[dict[str, Any]] = [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": self._system_prompt()},
             *[
                 {"role": item["role"], "content": item["content"]}
                 for item in (history or [])
@@ -94,7 +124,11 @@ class AgentRunner:
             ],
             {"role": "user", "content": prompt},
         ]
-        tools = [*TOOL_SCHEMAS, *(self.mcp.schemas() if self.mcp else [])]
+        tools = [*TOOL_SCHEMAS]
+        if self.skills.skills:
+            tools.append(USE_SKILL_SCHEMA)
+        if self.mcp:
+            tools.extend(self.mcp.schemas())
         repeated: dict[str, int] = {}
         ctx = ToolContext(
             workspace=Path(self.settings.workspace),
@@ -312,11 +346,51 @@ class AgentRunner:
         arguments: dict[str, Any],
         ctx: ToolContext,
     ) -> ToolObservation:
+        if name == "use_skill":
+            return self._use_skill(arguments)
         if name.startswith("mcp__"):
             if self.mcp is None:
                 raise ToolError("MCP 管理器未启用")
             return self.mcp.call(name, arguments)
         return execute_tool(name, arguments, ctx)
+
+    def _system_prompt(self) -> str:
+        if not self.skills.skills:
+            return SYSTEM_PROMPT
+        catalog = "\n".join(
+            f"- {line}" for line in skill_catalog_lines(self.skills)
+        )
+        return (
+            f"{SYSTEM_PROMPT}\n"
+            "可用技能目录（这里只有名称与触发说明；匹配任务时调用 "
+            "`use_skill` 获取完整正文）：\n"
+            f"{catalog}"
+        )
+
+    def _use_skill(self, arguments: dict[str, Any]) -> ToolObservation:
+        if not self.skills.skills:
+            raise ToolError("技能系统未启用，或当前项目没有可用技能。")
+        name = arguments.get("name")
+        if not isinstance(name, str) or not name.strip():
+            raise ToolError("use_skill 需要非空的技能名称 name。")
+        normalized_name = name.strip()
+        try:
+            skill = self.skills.get(normalized_name)
+        except KeyError as exc:
+            available = ", ".join(item.name for item in self.skills.skills)
+            raise ToolError(
+                f"未知技能：{normalized_name}。可用技能：{available}"
+            ) from exc
+        body = skill.document.body.strip()
+        content = f"# 技能：{skill.name}\n\n{body}"
+        return ToolObservation(
+            text=content,
+            content=content,
+            metadata={
+                "skill": skill.name,
+                "source": str(skill.document.source or skill.directory),
+            },
+        )
 
     def _compact_if_needed(
         self,
