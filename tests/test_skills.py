@@ -98,11 +98,16 @@ class SkillsParserTest(unittest.TestCase):
 
     def test_load_skills_from_project(self) -> None:
         registry = load_skills(self.root)
-        self.assertEqual(len(registry), 1)
-        self.assertEqual(registry.skills[0].name, "run-tests")
-        self.assertFalse(registry.skills[0].has_scripts)
-        self.assertFalse(registry.skills[0].uses_mcp)
-        self.assertIn("run-tests:", skill_catalog_lines(registry)[0])
+        self.assertEqual(len(registry), 3)
+        by_name = {skill.name: skill for skill in registry.skills}
+        self.assertEqual(
+            set(by_name),
+            {"run-tests", "review-diff", "fetch-issue"},
+        )
+        self.assertFalse(by_name["run-tests"].has_scripts)
+        self.assertTrue(by_name["review-diff"].has_scripts)
+        self.assertTrue(by_name["fetch-issue"].uses_mcp)
+        self.assertIn("run-tests:", "\n".join(skill_catalog_lines(registry)))
 
     def test_loader_detects_scripts_directory(self) -> None:
         target = self.workspace / "skills" / "review-diff" / "SKILL.md"
