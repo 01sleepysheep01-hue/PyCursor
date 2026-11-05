@@ -10,10 +10,13 @@ from unittest.mock import patch
 from pycursor.skills import (
     SkillDisabledError,
     SkillError,
+    estimate_tokens,
     load_skills,
     parse_skill_document,
     render_skill_template,
     skill_catalog_lines,
+    skill_full_text,
+    skill_token_stats,
     skills_enabled,
     write_default_skill,
 )
@@ -155,6 +158,45 @@ class SkillsParserTest(unittest.TestCase):
             self.assertFalse(skills_enabled())
             with self.assertRaises(SkillDisabledError):
                 parse_skill_document(text)
+
+    def test_token_estimator_handles_english_and_chinese(self) -> None:
+        self.assertGreater(estimate_tokens("运行 python -m unittest"), 3)
+        self.assertLess(estimate_tokens("短"), estimate_tokens("较长的一段正文"))
+        self.assertEqual(estimate_tokens("   "), 0)
+
+    def test_token_stats_compare_catalog_with_full_documents(self) -> None:
+        for name, description, body_size in (
+            ("run-tests", "跑测试。Use this when 用户说测一下。", 20),
+            ("review-diff", "审查 diff。Use this when 用户要求 review diff。", 30),
+        ):
+            target = self.workspace / "skills" / name / "SKILL.md"
+            target.parent.mkdir(parents=True)
+            body = "\n".join(
+                f"- 检查第 {index} 项" for index in range(body_size)
+            )
+            target.write_text(
+                "---\n"
+                f"name: {name}\n"
+                f"description: {description}\n"
+                "---\n"
+                "## 怎么算做完了\n"
+                f"{body}\n",
+                encoding="utf-8",
+            )
+        registry = load_skills(self.workspace)
+        stats = skill_token_stats(registry)
+
+        self.assertGreater(stats.catalog_tokens, 0)
+        self.assertGreater(stats.full_tokens, stats.catalog_tokens)
+        self.assertGreater(stats.disclosure_ratio, 1.0)
+        self.assertIn("name: review-diff", skill_full_text(registry))
+
+    def test_empty_registry_has_zero_token_stats(self) -> None:
+        registry = load_skills(self.workspace)
+        stats = skill_token_stats(registry)
+        self.assertEqual(stats.catalog_tokens, 0)
+        self.assertEqual(stats.full_tokens, 0)
+        self.assertEqual(stats.disclosure_ratio, 0.0)
 
 
 if __name__ == "__main__":
