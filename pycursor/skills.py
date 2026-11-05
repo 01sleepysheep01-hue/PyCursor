@@ -11,6 +11,7 @@ from pathlib import Path
 MAX_SKILL_BYTES = 32_768
 MAX_SKILL_LINES = 200
 SKILL_NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+TOKEN_PATTERN = re.compile(r"[A-Za-z0-9_]+|[^\sA-Za-z0-9_]")
 
 DEFAULT_SKILL_NAME = "run-tests"
 DEFAULT_SKILL_DESCRIPTION = (
@@ -34,6 +35,7 @@ class SkillDocument:
     body: str
     metadata: dict[str, str] = field(default_factory=dict)
     source: Path | None = None
+    raw_text: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -65,6 +67,13 @@ class SkillRegistry:
 
     def __len__(self) -> int:
         return len(self.skills)
+
+
+@dataclass(frozen=True, slots=True)
+class SkillTokenStats:
+    catalog_tokens: int
+    full_tokens: int
+    disclosure_ratio: float
 
 
 def skills_enabled() -> bool:
@@ -204,6 +213,7 @@ def parse_skill_document(
         body=body,
         metadata=metadata,
         source=source,
+        raw_text=normalized,
     )
 
 
@@ -353,6 +363,38 @@ def skill_catalog_lines(registry: SkillRegistry) -> list[str]:
     return lines
 
 
+def estimate_tokens(text: str) -> int:
+    """Estimate prompt tokens without downloading a model-specific tokenizer."""
+    return len(TOKEN_PATTERN.findall(text))
+
+
+def skill_catalog_text(registry: SkillRegistry) -> str:
+    return "\n".join(skill_catalog_lines(registry))
+
+
+def skill_full_text(registry: SkillRegistry) -> str:
+    return "\n\n".join(
+        skill.document.raw_text
+        for skill in registry.skills
+        if skill.document.raw_text
+    )
+
+
+def skill_token_stats(registry: SkillRegistry) -> SkillTokenStats:
+    catalog_tokens = estimate_tokens(skill_catalog_text(registry))
+    full_tokens = estimate_tokens(skill_full_text(registry))
+    ratio = (
+        round(full_tokens / catalog_tokens, 3)
+        if catalog_tokens and full_tokens
+        else 0.0
+    )
+    return SkillTokenStats(
+        catalog_tokens=catalog_tokens,
+        full_tokens=full_tokens,
+        disclosure_ratio=ratio,
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Inspect PyCursor skills")
     parser.add_argument("--root", default=".", help="项目根目录")
@@ -360,10 +402,14 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     registry = load_skills(args.root)
+    token_stats = skill_token_stats(registry)
     if args.json:
         payload = {
             "enabled": skills_enabled(),
             "root": str(registry.root),
+            "catalog_tokens": token_stats.catalog_tokens,
+            "full_tokens": token_stats.full_tokens,
+            "disclosure_ratio": token_stats.disclosure_ratio,
             "skills": [
                 {
                     "name": skill.name,
@@ -384,6 +430,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Found {len(registry.skills)} skill(s):")
         for line in skill_catalog_lines(registry):
             print(f"- {line}")
+        print(
+            "Token estimates: "
+            f"catalog={token_stats.catalog_tokens}, "
+            f"full={token_stats.full_tokens}, "
+            f"ratio={token_stats.disclosure_ratio}"
+        )
     return 0
 
 
