@@ -17,5 +17,5 @@ pycursor = "pycursor.__main__:main"
 pycursor-server = "pycursor.server:cli"
 
 [tool.setuptools.packages.find]
-include = ["pycursor*"]
+include = ["pycursor*", "app*"]
 

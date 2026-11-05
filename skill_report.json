@@ -1,0 +1,82 @@
+{
+  "skills": [
+    {
+      "name": "fetch-issue",
+      "has_scripts": false,
+      "uses_mcp": true,
+      "form": "prompt+mcp"
+    },
+    {
+      "name": "review-diff",
+      "has_scripts": true,
+      "uses_mcp": false,
+      "form": "prompt+script"
+    },
+    {
+      "name": "run-tests",
+      "has_scripts": false,
+      "uses_mcp": false,
+      "form": "prompt"
+    }
+  ],
+  "catalog_tokens": 158,
+  "full_tokens": 1080,
+  "disclosure_ratio": 6.835,
+  "trials": [
+    {
+      "query": "帮我测一下",
+      "expected": "run-tests",
+      "hit": "run-tests",
+      "ok": true
+    },
+    {
+      "query": "测试为什么挂了",
+      "expected": "run-tests",
+      "hit": "run-tests",
+      "ok": true
+    },
+    {
+      "query": "审一下 diff",
+      "expected": "review-diff",
+      "hit": "review-diff",
+      "ok": true
+    },
+    {
+      "query": "review 改动有没有风险",
+      "expected": "review-diff",
+      "hit": "review-diff",
+      "ok": true
+    },
+    {
+      "query": "看看这个 issue",
+      "expected": "fetch-issue",
+      "hit": "fetch-issue",
+      "ok": true
+    },
+    {
+      "query": "读取 GitHub issue 12",
+      "expected": "fetch-issue",
+      "hit": "fetch-issue",
+      "ok": true
+    },
+    {
+      "query": "今天天气怎么样",
+      "expected": null,
+      "hit": null,
+      "ok": true
+    },
+    {
+      "query": "把我这两行文字改得更正式",
+      "expected": null,
+      "hit": null,
+      "ok": true
+    },
+    {
+      "query": "检查 README 的错别字",
+      "expected": null,
+      "hit": null,
+      "ok": true
+    }
+  ],
+  "false_positive": 0
+}
