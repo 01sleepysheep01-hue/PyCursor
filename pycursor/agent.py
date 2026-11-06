@@ -9,6 +9,7 @@ from typing import Any, Protocol
 
 from .agents import AgentInstructionBundle, load_agent_instructions
 from .config import Settings
+from .hooks import before_tool
 from .llm import ChatReply, LLMError, OpenAICompatibleClient
 from .mcp import MCPManager
 from .skills import SkillRegistry, load_skills, skill_catalog_lines
@@ -353,6 +354,7 @@ class AgentRunner:
         arguments: dict[str, Any],
         ctx: ToolContext,
     ) -> ToolObservation:
+        before_tool(name, arguments, ctx.workspace)
         if name == "use_skill":
             return self._use_skill(arguments)
         if name.startswith("mcp__"):
