@@ -231,6 +231,19 @@ class AgentTest(unittest.TestCase):
         )
         self.assertNotIn("可用技能目录", client.message_snapshots[0][0]["content"])
 
+    def test_project_agents_file_is_injected(self) -> None:
+        (self.workspace / "AGENTS.md").write_text(
+            "# 项目地图\n只允许使用标准库。\n",
+            encoding="utf-8",
+        )
+        client = ScriptedClient([final_reply("已读取规则。")])
+        result, _ = self.run_agent(client)
+
+        self.assertFalse(result.failed)
+        system_prompt = client.message_snapshots[0][0]["content"]
+        self.assertIn("## 项目 AGENTS.md", system_prompt)
+        self.assertIn("只允许使用标准库", system_prompt)
+
 
 if __name__ == "__main__":
     unittest.main()
