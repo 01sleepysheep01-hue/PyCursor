@@ -244,6 +244,44 @@ class AgentTest(unittest.TestCase):
         self.assertIn("## 项目 AGENTS.md", system_prompt)
         self.assertIn("只允许使用标准库", system_prompt)
 
+    def test_pretool_hook_blocks_env_write(self) -> None:
+        client = ScriptedClient(
+            [
+                tool_reply(
+                    "write",
+                    {"path": ".env", "content": "DEEPSEEK_API_KEY=secret"},
+                ),
+                final_reply("密钥文件写入被拦截。"),
+            ]
+        )
+        result, events = self.run_agent(client)
+
+        self.assertFalse(result.failed)
+        self.assertFalse((self.workspace / ".env").exists())
+        failures = [event for event in events if event["type"] == "tool.failed"]
+        self.assertEqual(len(failures), 1)
+        self.assertIn("PreToolUse Hook 拒绝", failures[0]["error"])
+        self.assertIn(".env.example", failures[0]["error"])
+
+    def test_disabled_hooks_allow_env_write(self) -> None:
+        client = ScriptedClient(
+            [
+                tool_reply(
+                    "write",
+                    {"path": ".env", "content": "ONLY_FOR_TEST=1\n"},
+                ),
+                final_reply("写入完成。"),
+            ]
+        )
+        with patch.dict(os.environ, {"ENABLE_HOOKS": "0"}):
+            result, _ = self.run_agent(client)
+
+        self.assertFalse(result.failed)
+        self.assertEqual(
+            (self.workspace / ".env").read_text(encoding="utf-8"),
+            "ONLY_FOR_TEST=1\n",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
