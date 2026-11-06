@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
 
+from .agents import AgentInstructionBundle, load_agent_instructions
 from .config import Settings
 from .llm import ChatReply, LLMError, OpenAICompatibleClient
 from .mcp import MCPManager
@@ -94,6 +95,7 @@ class AgentRunner:
         client: ChatClient | None = None,
         mcp: MCPManager | None = None,
         skills: SkillRegistry | None = None,
+        agent_instructions: AgentInstructionBundle | None = None,
     ) -> None:
         self.settings = settings
         self.client = client or OpenAICompatibleClient(settings)
@@ -102,6 +104,11 @@ class AgentRunner:
             skills
             if skills is not None
             else load_skills(self.settings.workspace)
+        )
+        self.agent_instructions = (
+            agent_instructions
+            if agent_instructions is not None
+            else load_agent_instructions(self.settings.workspace)
         )
 
     def run(
@@ -355,17 +362,20 @@ class AgentRunner:
         return execute_tool(name, arguments, ctx)
 
     def _system_prompt(self) -> str:
-        if not self.skills.skills:
-            return SYSTEM_PROMPT
-        catalog = "\n".join(
-            f"- {line}" for line in skill_catalog_lines(self.skills)
-        )
-        return (
-            f"{SYSTEM_PROMPT}\n"
-            "可用技能目录（这里只有名称与触发说明；匹配任务时调用 "
-            "`use_skill` 获取完整正文）：\n"
-            f"{catalog}"
-        )
+        sections = [SYSTEM_PROMPT]
+        agent_instructions = self.agent_instructions.render()
+        if agent_instructions:
+            sections.append(agent_instructions)
+        if self.skills.skills:
+            catalog = "\n".join(
+                f"- {line}" for line in skill_catalog_lines(self.skills)
+            )
+            sections.append(
+                "可用技能目录（这里只有名称与触发说明；匹配任务时调用 "
+                "`use_skill` 获取完整正文）：\n"
+                f"{catalog}"
+            )
+        return "\n\n".join(sections)
 
     def _use_skill(self, arguments: dict[str, Any]) -> ToolObservation:
         if not self.skills.skills:
