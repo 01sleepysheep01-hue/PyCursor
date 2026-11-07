@@ -282,6 +282,21 @@ class AgentTest(unittest.TestCase):
             "ONLY_FOR_TEST=1\n",
         )
 
+    def test_pretool_hook_blocks_destructive_bash_command(self) -> None:
+        client = ScriptedClient(
+            [
+                tool_reply("bash", {"command": "rm -rf build"}),
+                final_reply("危险命令已拦截。"),
+            ]
+        )
+        result, events = self.run_agent(client)
+
+        self.assertFalse(result.failed)
+        failures = [event for event in events if event["type"] == "tool.failed"]
+        self.assertEqual(len(failures), 1)
+        self.assertIn("PreToolUse Hook 拒绝", failures[0]["error"])
+        self.assertIn("git restore", failures[0]["error"])
+
 
 if __name__ == "__main__":
     unittest.main()
