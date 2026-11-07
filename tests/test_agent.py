@@ -221,7 +221,10 @@ class AgentTest(unittest.TestCase):
             encoding="utf-8",
         )
         client = ScriptedClient([final_reply("旧版工具集。")])
-        with patch.dict(os.environ, {"ENABLE_SKILLS": "0"}):
+        with patch.dict(
+            os.environ,
+            {"ENABLE_SKILLS": "0", "ENABLE_REVIEWER": "0"},
+        ):
             result, _ = self.run_agent(client)
 
         self.assertFalse(result.failed)
@@ -318,6 +321,39 @@ class AgentTest(unittest.TestCase):
             follow_up_messages[-1]["content"],
         )
         self.assertIn("Ran 0 tests", follow_up_messages[-1]["content"])
+
+    def test_review_diff_returns_only_final_reviewer_message(self) -> None:
+        client = ScriptedClient(
+            [
+                tool_reply("review_diff", {}),
+                tool_reply("bash", {"command": "git diff --stat"}, "review-bash"),
+                final_reply("审查结论：无阻断问题。"),
+                final_reply("reviewer 已返回最终判定。"),
+            ]
+        )
+        result, events = self.run_agent(client)
+
+        self.assertFalse(result.failed)
+        self.assertIn("review_diff", client.tool_names[0])
+        self.assertEqual(client.tool_names[1], ["read", "bash"])
+        self.assertNotIn(
+            "bash",
+            [event["name"] for event in events if event["type"] == "tool.started"],
+        )
+        completed = [
+            event for event in events if event["type"] == "tool.completed"
+        ]
+        self.assertEqual(completed[0]["name"], "review_diff")
+        self.assertEqual(completed[0]["content"], "审查结论：无阻断问题。")
+        self.assertTrue(completed[0]["metadata"]["isolated_context"])
+
+    def test_disabled_reviewer_is_not_registered(self) -> None:
+        client = ScriptedClient([final_reply("reviewer 已关闭。")])
+        with patch.dict(os.environ, {"ENABLE_REVIEWER": "0"}):
+            result, _ = self.run_agent(client)
+
+        self.assertFalse(result.failed)
+        self.assertNotIn("review_diff", client.tool_names[0])
 
 
 if __name__ == "__main__":

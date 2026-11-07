@@ -12,6 +12,7 @@ from .config import Settings
 from .hooks import after_tool, before_tool
 from .llm import ChatReply, LLMError, OpenAICompatibleClient
 from .mcp import MCPManager
+from .reviewer import REVIEW_DIFF_SCHEMA, ReviewerAgent, reviewer_enabled
 from .skills import SkillRegistry, load_skills, skill_catalog_lines
 from .tools import (
     TOOL_SCHEMAS,
@@ -135,6 +136,8 @@ class AgentRunner:
         tools = [*TOOL_SCHEMAS]
         if self.skills.skills:
             tools.append(USE_SKILL_SCHEMA)
+        if reviewer_enabled():
+            tools.append(REVIEW_DIFF_SCHEMA)
         if self.mcp:
             tools.extend(self.mcp.schemas())
         repeated: dict[str, int] = {}
@@ -388,6 +391,25 @@ class AgentRunner:
         before_tool(name, arguments, ctx.workspace)
         if name == "use_skill":
             return self._use_skill(arguments)
+        if name == "review_diff":
+            result = ReviewerAgent(
+                client=self.client,
+                workspace=ctx.workspace,
+                cancel_event=ctx.cancel_event,
+                command_timeout=ctx.command_timeout,
+                max_steps=min(6, self.settings.max_steps),
+            ).review()
+            if result.failed:
+                raise ToolError(result.content)
+            return ToolObservation(
+                text=result.content,
+                content=result.content,
+                metadata={
+                    "reviewer": True,
+                    "isolated_context": True,
+                    "steps": result.steps,
+                },
+            )
         if name.startswith("mcp__"):
             if self.mcp is None:
                 raise ToolError("MCP 管理器未启用")
