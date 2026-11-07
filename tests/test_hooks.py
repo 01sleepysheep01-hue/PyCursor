@@ -7,7 +7,7 @@ import uuid
 from pathlib import Path
 from unittest.mock import patch
 
-from pycursor.hooks import before_tool, hooks_enabled
+from pycursor.hooks import after_tool, before_tool, hooks_enabled
 from pycursor.tools import ToolError
 
 
@@ -106,6 +106,68 @@ class PreToolUseHookTest(unittest.TestCase):
 
     def test_other_tools_are_not_intercepted(self) -> None:
         before_tool("read", {"path": ".env"}, self.workspace)
+
+    def test_post_tool_summarizes_failing_test_without_traceback(self) -> None:
+        target = self.workspace / "test_sample.py"
+        target.write_text(
+            "import unittest\n"
+            "class SampleTest(unittest.TestCase):\n"
+            "    def test_value(self):\n"
+            "        self.assertEqual(1, 2)\n",
+            encoding="utf-8",
+        )
+        result = after_tool(
+            "edit",
+            {"path": "test_sample.py", "old": "1", "new": "2"},
+            self.workspace,
+            timeout=20,
+        )
+
+        self.assertIsNotNone(result)
+        assert result is not None
+        self.assertNotEqual(result.exit_code, 0)
+        self.assertIn("test_value", result.summary)
+        self.assertIn("1 != 2", result.summary)
+        self.assertNotIn("Traceback (most recent call last)", result.summary)
+
+    def test_post_tool_summarizes_passing_test(self) -> None:
+        target = self.workspace / "test_sample.py"
+        target.write_text(
+            "import unittest\n"
+            "class SampleTest(unittest.TestCase):\n"
+            "    def test_value(self):\n"
+            "        self.assertEqual(1, 1)\n",
+            encoding="utf-8",
+        )
+        result = after_tool(
+            "write",
+            {"path": "test_sample.py", "content": target.read_text(encoding="utf-8")},
+            self.workspace,
+            timeout=20,
+        )
+
+        self.assertIsNotNone(result)
+        assert result is not None
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Ran 1 test", result.summary)
+        self.assertIn("OK", result.summary)
+
+    def test_post_tool_ignores_non_code_and_disabled_hook(self) -> None:
+        self.assertIsNone(
+            after_tool(
+                "write",
+                {"path": "README.md", "content": "docs"},
+                self.workspace,
+            )
+        )
+        with patch.dict(os.environ, {"ENABLE_HOOKS": "0"}):
+            self.assertIsNone(
+                after_tool(
+                    "write",
+                    {"path": "main.py", "content": "VALUE = 1\n"},
+                    self.workspace,
+                )
+            )
 
 
 if __name__ == "__main__":
