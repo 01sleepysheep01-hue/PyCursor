@@ -68,6 +68,42 @@ class PreToolUseHookTest(unittest.TestCase):
                 self.workspace,
             )
 
+    def test_blocks_recursive_force_delete(self) -> None:
+        commands = (
+            "rm -rf build",
+            "rm -fr build",
+            "rm -r -f build",
+            "rm --recursive --force build",
+            "cd project && sudo rm -Rf build",
+        )
+        for command in commands:
+            with self.subTest(command=command), self.assertRaises(ToolError) as caught:
+                before_tool("bash", {"command": command}, self.workspace)
+            self.assertIn("git restore", str(caught.exception))
+
+    def test_blocks_dangerous_git_commands_with_alternatives(self) -> None:
+        commands = (
+            "git push --force",
+            "git push -f origin main",
+            "git push --force-with-lease",
+            "git reset --hard HEAD~1",
+        )
+        for command in commands:
+            with self.subTest(command=command), self.assertRaises(ToolError):
+                before_tool("bash", {"command": command}, self.workspace)
+
+    def test_allows_non_destructive_commands(self) -> None:
+        commands = (
+            "rm build/output.txt",
+            "git push origin main",
+            "git reset --soft HEAD~1",
+            "git status --short",
+            'echo "rm -rf is documentation text"',
+        )
+        for command in commands:
+            with self.subTest(command=command):
+                before_tool("bash", {"command": command}, self.workspace)
+
     def test_other_tools_are_not_intercepted(self) -> None:
         before_tool("read", {"path": ".env"}, self.workspace)
 
