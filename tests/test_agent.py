@@ -297,6 +297,28 @@ class AgentTest(unittest.TestCase):
         self.assertIn("PreToolUse Hook 拒绝", failures[0]["error"])
         self.assertIn("git restore", failures[0]["error"])
 
+    def test_post_tool_test_summary_is_injected(self) -> None:
+        client = ScriptedClient(
+            [
+                tool_reply(
+                    "write",
+                    {"path": "stats.py", "content": "value = 2\n"},
+                ),
+                final_reply("代码已修改，并读取了测试摘要。"),
+            ]
+        )
+        result, events = self.run_agent(client)
+
+        self.assertFalse(result.failed)
+        self.assertIn("hook.post_tool", [event["type"] for event in events])
+        follow_up_messages = client.message_snapshots[1]
+        self.assertEqual(follow_up_messages[-1]["role"], "user")
+        self.assertIn(
+            "[PostToolUse 自动测试]",
+            follow_up_messages[-1]["content"],
+        )
+        self.assertIn("Ran 0 tests", follow_up_messages[-1]["content"])
+
 
 if __name__ == "__main__":
     unittest.main()

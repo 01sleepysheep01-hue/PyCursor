@@ -9,7 +9,7 @@ from typing import Any, Protocol
 
 from .agents import AgentInstructionBundle, load_agent_instructions
 from .config import Settings
-from .hooks import before_tool
+from .hooks import after_tool, before_tool
 from .llm import ChatReply, LLMError, OpenAICompatibleClient
 from .mcp import MCPManager
 from .skills import SkillRegistry, load_skills, skill_catalog_lines
@@ -265,6 +265,7 @@ class AgentRunner:
                             "call_id": call_id,
                         },
                     )
+                    post_tool_result = None
                     try:
                         observation = self._execute(name, arguments, ctx)
                         event_data = {
@@ -287,6 +288,25 @@ class AgentRunner:
                                 },
                             )
                         content: str | list[dict[str, Any]] = observation.content
+                        if not cancel_event.is_set():
+                            post_tool_result = after_tool(
+                                name,
+                                arguments,
+                                ctx.workspace,
+                                timeout=ctx.command_timeout,
+                            )
+                            if post_tool_result:
+                                emit(
+                                    "hook.post_tool",
+                                    {
+                                        "task_id": task_id,
+                                        "step": step,
+                                        "name": name,
+                                        "command": post_tool_result.command,
+                                        "exit_code": post_tool_result.exit_code,
+                                        "summary": post_tool_result.summary,
+                                    },
+                                )
                         trace.append(
                             f"[step {step}] {name}("
                             + ", ".join(f"{k}={v!r}" for k, v in arguments.items())
@@ -328,6 +348,17 @@ class AgentRunner:
                     )
                     if reminder:
                         messages.append({"role": "user", "content": reminder})
+                    if post_tool_result:
+                        messages.append(
+                            {
+                                "role": "user",
+                                "content": post_tool_result.summary,
+                            }
+                        )
+                        trace.append(
+                            f"[step {step}] PostToolUse tests → "
+                            f"exit {post_tool_result.exit_code}"
+                        )
 
             content = (
                 f"已达到 {self.settings.max_steps} 步上限，任务未确认完成。"
