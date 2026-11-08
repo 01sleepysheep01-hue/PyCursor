@@ -1,0 +1,44 @@
+{
+  "mode": "deterministic_probe",
+  "description": "所有数字均由本地代码路径实际运行生成；reviewer 使用脚本化模型，不调用外部 API，也不消耗 API Key。",
+  "switches": {
+    "ENABLE_AGENTS": true,
+    "ENABLE_HOOKS": true,
+    "ENABLE_REVIEWER": true
+  },
+  "agents_md": {
+    "found": true,
+    "bytes": 1353,
+    "layers": [
+      "project"
+    ],
+    "files": 1
+  },
+  "denied": [
+    {
+      "tool": "write",
+      "reason": "PreToolUse Hook 拒绝：write 不得修改受保护文件 .env。密钥不入库，使用环境变量。变量名和占位符可写入 .env.example；真实值只放在系统环境变量或 %USERPROFILE%\\.pycursor\\config.json。",
+      "path": ".env"
+    },
+    {
+      "tool": "bash",
+      "reason": "PreToolUse Hook 拒绝：rm -rf / --recursive --force 会不可恢复地删除文件。请改用 git restore <path> 恢复已跟踪文件；临时文件可用 Python tempfile 管理，或先将目标移入回收站并核对精确路径。",
+      "command": "rm -rf build/"
+    }
+  ],
+  "autotest": {
+    "runs": 2,
+    "red": 1,
+    "green": 1,
+    "red_to_green": 1,
+    "injected_lines": 8
+  },
+  "reviewer": {
+    "runs": 1,
+    "issues_found": 1,
+    "main_context_delta": 30,
+    "subagent_tokens": 36,
+    "isolated_context": true,
+    "failed": false
+  }
+}
