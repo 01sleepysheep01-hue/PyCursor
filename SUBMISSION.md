@@ -19,17 +19,18 @@
 - [x] 技能系统、`AGENTS.md`、三条 Hook 与 reviewer
 - [x] `skill_report.json` 与 `custom_report.json`
 
-## 需要账号完成的步骤
+## 最终提交
 
 - [x] 在 GitHub 创建 public 仓库
 - [x] 按真实开发过程形成至少 15 次 commit，跨度至少 7 天
 - [x] 创建 `v1.0` tag
-- [ ] 创建 `v1.1` 与 `v1.2` tag
-- [ ] 创建 GitHub Release 并上传 `dist/PyCursor-Setup-1.2.0.exe`
-- [ ] 将仓库链接与 Release 链接填写到课程表格
+- [x] 创建 `v1.1` 与 `v1.2` tag
+- [x] 创建 [v1.2 GitHub Release](https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.2)
+- [ ] 将 [仓库链接](https://github.com/01sleepysheep01-hue/PyCursor) 与 Release
+  链接填写到课程表格
 - [ ] 按 `docs/demo.md` 用自己的电脑完成 5 分钟现场演示
 
-公开仓库和 Release 需要账户授权，且提交历史不能由打包工具伪造。
+`v1.3` 对应选做 C“常驻”，本项目未实现 `daemon_report.json`，因此不创建空 tag。
 
 ## 现场演示前检查
 
