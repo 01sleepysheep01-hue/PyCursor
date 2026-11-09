@@ -5,6 +5,9 @@
 **/.env.*
 !**/.env.example
 .venv/
+.build-venv/
+.build-tmp/
+.build-pyinstaller/
 __pycache__/
 *.py[cod]
 build/

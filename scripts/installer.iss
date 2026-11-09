@@ -1,5 +1,5 @@
 #define MyAppName "PyCursor"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "PyCursor"
 #define MyAppExeName "PyCursor.exe"
 

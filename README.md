@@ -7,7 +7,8 @@
 
 ## 换一台电脑后，三步启动
 
-1. 下载并双击 `PyCursor-Setup-1.0.0.exe`，安装完成后打开 PyCursor。
+1. 从 [v1.2 Release](https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.2)
+   下载并双击 `PyCursor-Setup-1.2.0.exe`，安装完成后打开 PyCursor。
 2. 点击右上角“设置”，填写 DeepSeek API Key，Base URL 保持
    `https://api.deepseek.com/v1`，模型填写 `deepseek-chat` 或账户支持的
    `deepseek-v4-flash`。
@@ -47,15 +48,37 @@
 - 标准 MCP stdio 客户端，可发现并调用独立 server 的工具。
 - 后端可独立启动，`curl -N` 能直接观察事件流。
 - 会话保存在本机状态目录，多轮对话不依赖前端内存。
+- 三个可迁移技能，按需加载而不是全量注入。
+- `AGENTS.md` 分层注入、敏感文件与危险命令 Hook、自动测试摘要回注。
+- 独立只读 reviewer，只把最终判定回传主上下文。
 
 ## 直接安装（推荐）
 
-双击 `dist\PyCursor-Setup-1.0.0.exe`。安装器会安装到当前用户目录、创建快捷方式并
+双击 `dist\PyCursor-Setup-1.2.0.exe`。安装器会安装到当前用户目录、创建快捷方式并
 启动窗口。默认模型为 DeepSeek `deepseek-chat`，进入右上角“设置”填写
 DeepSeek API Key 后即可使用。
 
 安装版不要求用户预装 Python。该本地构建未做代码签名，Windows SmartScreen 可能
 显示“未知发布者”。
+
+## 增量能力与开关
+
+技能目录位于 `skills/`，项目规则位于 `AGENTS.md`。生成两份作业报告：
+
+```powershell
+python -m app.inspect skills --out skill_report.json
+python -m app.inspect custom --out custom_report.json
+```
+
+所有新增能力都可由环境变量回退到 v1.0 行为：
+
+```powershell
+$env:ENABLE_SKILLS="0"
+$env:ENABLE_AGENTS="0"
+$env:ENABLE_HOOKS="0"
+$env:ENABLE_REVIEWER="0"
+python -m pycursor --workspace .\examples\workspace
+```
 
 ## 从源码启动
 
@@ -228,7 +251,7 @@ python -m unittest discover -s tests -v
 .\scripts\build_sfx_setup.ps1
 ```
 
-该脚本使用 WinRAR 自解压模块生成 `dist\PyCursor-Setup-1.0.0.exe`，安装到当前用户的
+该脚本使用 WinRAR 自解压模块生成 `dist\PyCursor-Setup-1.2.0.exe`，安装到当前用户的
 `%LOCALAPPDATA%\Programs\PyCursor` 并创建桌面与开始菜单快捷方式。构建机需要 WinRAR；
 安装后的用户不需要 WinRAR、Python 或其他运行时。`scripts\installer.iss` 保留为
 Inno Setup 6 的可选替代方案。

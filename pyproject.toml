@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pycursor"
-version = "1.0.0"
+version = "1.2.0"
 description = "A small desktop coding agent with four tools and MCP support"
 readme = "README.md"
 requires-python = ">=3.10"

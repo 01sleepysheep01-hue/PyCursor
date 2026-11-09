@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
+from . import __version__
 from .agent import AgentResult, AgentRunner
 from .config import Settings
 from .events import EventBus, serialize_sse
@@ -279,7 +280,7 @@ class APIHandler(BaseHTTPRequestHandler):
                 self._send_json(
                     {
                         "ok": True,
-                        "version": "1.0.0",
+                        "version": __version__,
                         "model": self.server.app.settings.model,
                         "workspace": self.server.app.settings.workspace,
                     }

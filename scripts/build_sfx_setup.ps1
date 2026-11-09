@@ -1,12 +1,13 @@
 param(
-    [string]$RarExecutable = "C:\Program Files\WinRAR\Rar.exe"
+    [string]$RarExecutable = "C:\Program Files\WinRAR\Rar.exe",
+    [string]$Version = "1.2.0"
 )
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $StagingRoot = Join-Path $ProjectRoot ".sfx-stage"
-$OutputPath = Join-Path $ProjectRoot "dist\PyCursor-Setup-1.0.0.exe"
-$Payload = Join-Path $ProjectRoot "dist-windows\PyCursor"
+$OutputPath = Join-Path $ProjectRoot "dist\PyCursor-Setup-$Version.exe"
+$Payload = Join-Path $ProjectRoot "dist\PyCursor"
 
 if (-not (Test-Path -LiteralPath (Join-Path $Payload "PyCursor.exe"))) {
     throw "Run scripts\build_windows.ps1 first."

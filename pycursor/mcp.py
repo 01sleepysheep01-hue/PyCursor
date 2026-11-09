@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from . import __version__
 from .tools import ToolError, ToolObservation
 
 
@@ -98,7 +99,7 @@ class StdioMCPClient:
                 {
                     "protocolVersion": "2025-03-26",
                     "capabilities": {},
-                    "clientInfo": {"name": "PyCursor", "version": "1.0.0"},
+                    "clientInfo": {"name": "PyCursor", "version": __version__},
                 },
                 timeout=12,
             )

@@ -1,5 +1,6 @@
 param(
-    [string]$PythonCommand = "python"
+    [string]$PythonCommand = "python",
+    [string]$Version = "1.2.0"
 )
 
 $ErrorActionPreference = "Stop"
@@ -32,6 +33,8 @@ try {
         --name PyCursor `
         --add-data "mcp_servers;mcp_servers" `
         --add-data "examples;examples" `
+        --add-data "skills;examples/workspace/skills" `
+        --add-data "AGENTS.md;examples/workspace" `
         --add-data "mcp.json;." `
         --hidden-import tkinter `
         run_pycursor.py
@@ -59,5 +62,6 @@ Compress-Archive `
 
 Write-Host "Build complete: $ProjectRoot\dist\PyCursor\PyCursor.exe"
 Write-Host "Windows release: $ProjectRoot\dist\PyCursor-Windows-x64.zip"
+Write-Host "Version: $Version"
 Write-Host "Create an installer next with scripts\build_sfx_setup.ps1."
 

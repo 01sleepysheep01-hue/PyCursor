@@ -7,6 +7,7 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
+from . import __version__
 from .config import Settings
 
 
@@ -53,7 +54,7 @@ class OpenAICompatibleClient:
                 "Authorization": f"Bearer {settings.api_key}",
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "User-Agent": "PyCursor/1.0",
+                "User-Agent": f"PyCursor/{__version__}",
             },
             method="POST",
         )
