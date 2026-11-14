@@ -201,14 +201,33 @@ curl.exe -X POST http://127.0.0.1:8765/api/tasks/<task_id>/cancel
 
 安装第三方 MCP server 前应检查源码和权限，并只开放完成工作所需的最小能力。
 
+## 可验证性体检
+
+统一检查命令执行语法、源码卫生、敏感文件、疑似密钥和全部单元测试：
+
+```powershell
+python scripts\check.py
+```
+
+按九根柱子生成增量 D 报告：
+
+```powershell
+python -m app.readiness --out readiness_report.json
+```
+
+报告记录每项检查的证据、L1 至 L5 的解锁情况、当前等级和最该补的三项。详细说明见
+`docs/readiness.md`。
+
 ## 测试
 
 ```powershell
-python -m unittest discover -s tests -v
+python scripts\check.py
 ```
 
-测试覆盖路径越界、分页读取、多模态图片、原子写、edit 非唯一失败、非零退出码、
-命令超时、输出截断、智能体循环、取消、步数上限、MCP 调用和 HTTP 健康检查。
+该入口同时检查源码可编译性、尾随空白、Tab、敏感文件和疑似密钥，然后运行完整单元
+测试。测试覆盖路径越界、分页读取、多模态图片、原子写、edit 非唯一失败、非零
+退出码、命令超时、输出截断、智能体循环、取消、步数上限、MCP 调用和 HTTP 健康
+检查。
 
 ## 打包
 

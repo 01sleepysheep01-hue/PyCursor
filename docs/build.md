@@ -3,7 +3,8 @@
 ## 1. 本地验证
 
 ```powershell
-python -m unittest discover -s tests -v
+python scripts\check.py
+python -m app.readiness --out readiness_report.json
 python scripts\replay_demo.py
 ```
 
