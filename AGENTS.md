@@ -4,19 +4,22 @@
 - `pycursor/hooks.py`：工具前后的硬约束与测试摘要回注。
 - `pycursor/reviewer.py`：独立上下文的只读 diff reviewer。
 - `app/inspect.py`：独立生成作业报告，不依赖 UI。
+- `app/readiness.py`：按九根柱子和五个等级生成仓库体检报告。
 - `skills/`：可带走的技能目录，每个子目录必须有 `SKILL.md`。
 - `tests/`：标准库 `unittest` 测试；新增能力必须有开关和回归测试。
 - `.githooks/`：提交前敏感文件扫描；仓库使用 `.githooks`。
 
 # 构建与测试
 
-- 全量测试：`python -m unittest discover`
+- 必需检查：`python scripts/check.py`
+- 仓库体检：`python -m app.readiness --out readiness_report.json`
 - 技能报告：`python -m app.inspect skills --out skill_report.json`
 - 启动桌面版：`python -m pycursor`
 
 # 代码风格
 
 - 只用标准库和现有依赖，不随意增加第三方包。
+- 修改后先运行 `python scripts/check.py`，失败时不要提交。
 - 面向用户的错误要说明原因和替代方案，不要只写“失败”。
 - 新能力默认可用，同时支持对应环境变量关闭。
 

@@ -15,4 +15,8 @@ if git grep --cached -I -E 'sk-[A-Za-z0-9_-]{20,}' -- . ':!.env.example' >/dev/n
     exit 1
 fi
 
+if command -v python >/dev/null 2>&1; then
+    python scripts/check.py --static-only
+fi
+
 exit 0

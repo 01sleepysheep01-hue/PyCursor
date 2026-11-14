@@ -1,0 +1,432 @@
+{
+  "schema_version": 1,
+  "project": "CodeProof (PyCursor)",
+  "version": "1.0.0",
+  "generated_at": "2026-11-14T05:49:43.334853+00:00",
+  "level": "L3",
+  "level_pass": true,
+  "threshold": "L3",
+  "overall_score": 88.2,
+  "pillars": [
+    {
+      "id": "style",
+      "name": "样式与校验",
+      "score": 100.0,
+      "passed_weight": 3,
+      "total_weight": 3,
+      "checks": [
+        {
+          "pillar": "style",
+          "id": "syntax",
+          "title": "所有 Python 源文件可编译",
+          "passed": true,
+          "evidence": "python scripts/check.py",
+          "level": "L1",
+          "weight": 1
+        },
+        {
+          "pillar": "style",
+          "id": "hygiene",
+          "title": "统一检查覆盖尾随空白和 Tab",
+          "passed": true,
+          "evidence": "scripts/check.py",
+          "level": "L3",
+          "weight": 1
+        },
+        {
+          "pillar": "style",
+          "id": "static_entry",
+          "title": "存在独立静态检查入口",
+          "passed": true,
+          "evidence": "scripts/check.py",
+          "level": "L2",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "name": "构建系统",
+      "score": 100.0,
+      "passed_weight": 3,
+      "total_weight": 3,
+      "checks": [
+        {
+          "pillar": "build",
+          "id": "imports",
+          "title": "应用与后端包可导入",
+          "passed": true,
+          "evidence": "python -c import app, pycursor",
+          "level": "L1",
+          "weight": 1
+        },
+        {
+          "pillar": "build",
+          "id": "packaging",
+          "title": "声明 Python 版本与构建后端",
+          "passed": true,
+          "evidence": "pyproject.toml",
+          "level": "L2",
+          "weight": 1
+        },
+        {
+          "pillar": "build",
+          "id": "entry_points",
+          "title": "提供桌面端与后端命令入口",
+          "passed": true,
+          "evidence": "pyproject.toml",
+          "level": "L3",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "tests",
+      "name": "测试",
+      "score": 100.0,
+      "passed_weight": 5,
+      "total_weight": 5,
+      "checks": [
+        {
+          "pillar": "tests",
+          "id": "suite_exists",
+          "title": "存在自动测试目录",
+          "passed": true,
+          "evidence": "tests/",
+          "level": "L1",
+          "weight": 1
+        },
+        {
+          "pillar": "tests",
+          "id": "one_command",
+          "title": "一条命令运行测试与静态检查",
+          "passed": true,
+          "evidence": "python scripts/check.py",
+          "level": "L3",
+          "weight": 2
+        },
+        {
+          "pillar": "tests",
+          "id": "ci_enforcement",
+          "title": "CI 强制执行同一检查入口",
+          "passed": true,
+          "evidence": ".github/workflows/ci.yml",
+          "level": "L3",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "docs",
+      "name": "文档",
+      "score": 100.0,
+      "passed_weight": 3,
+      "total_weight": 3,
+      "checks": [
+        {
+          "pillar": "docs",
+          "id": "readme",
+          "title": "README 说明安装、启动与测试",
+          "passed": true,
+          "evidence": "README.md",
+          "level": "L1",
+          "weight": 1
+        },
+        {
+          "pillar": "docs",
+          "id": "agents",
+          "title": "AGENTS.md 写清构建与测试命令",
+          "passed": true,
+          "evidence": "AGENTS.md",
+          "level": "L2",
+          "weight": 1
+        },
+        {
+          "pillar": "docs",
+          "id": "readiness_docs",
+          "title": "存在独立体检文档",
+          "passed": true,
+          "evidence": "docs/readiness.md",
+          "level": "L2",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "environment",
+      "name": "开发环境",
+      "score": 100.0,
+      "passed_weight": 3,
+      "total_weight": 3,
+      "checks": [
+        {
+          "pillar": "environment",
+          "id": "env_example",
+          "title": "提供不含真实值的 .env.example",
+          "passed": true,
+          "evidence": ".env.example",
+          "level": "L2",
+          "weight": 1
+        },
+        {
+          "pillar": "environment",
+          "id": "reproducible_command",
+          "title": "环境可从项目源码复现",
+          "passed": true,
+          "evidence": "README.md + import check",
+          "level": "L2",
+          "weight": 1
+        },
+        {
+          "pillar": "environment",
+          "id": "dependency_boundary",
+          "title": "运行时依赖边界明确",
+          "passed": true,
+          "evidence": "pyproject.toml",
+          "level": "L3",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "observability",
+      "name": "可观测性",
+      "score": 100.0,
+      "passed_weight": 3,
+      "total_weight": 3,
+      "checks": [
+        {
+          "pillar": "observability",
+          "id": "event_bus",
+          "title": "工具与任务事件进入统一事件总线",
+          "passed": true,
+          "evidence": "pycursor/events.py",
+          "level": "L2",
+          "weight": 1
+        },
+        {
+          "pillar": "observability",
+          "id": "trace_docs",
+          "title": "存在可核对的 Trace 文档",
+          "passed": true,
+          "evidence": "docs/trace.md",
+          "level": "L3",
+          "weight": 1
+        },
+        {
+          "pillar": "observability",
+          "id": "bounded_output",
+          "title": "命令输出有截断和超时记录",
+          "passed": true,
+          "evidence": "pycursor/tools.py",
+          "level": "L3",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "name": "安全",
+      "score": 100.0,
+      "passed_weight": 6,
+      "total_weight": 6,
+      "checks": [
+        {
+          "pillar": "security",
+          "id": "env_ignored",
+          "title": ".env 与本地配置被 Git 忽略",
+          "passed": true,
+          "evidence": ".gitignore",
+          "level": "L3",
+          "weight": 2
+        },
+        {
+          "pillar": "security",
+          "id": "pre_commit",
+          "title": "提交前阻止敏感文件与 API Key",
+          "passed": true,
+          "evidence": ".githooks/pre-commit",
+          "level": "L3",
+          "weight": 2
+        },
+        {
+          "pillar": "security",
+          "id": "secret_scan",
+          "title": "统一检查扫描环境文件与疑似密钥",
+          "passed": true,
+          "evidence": "scripts/check.py",
+          "level": "L3",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "task_discovery",
+      "name": "任务发现",
+      "score": 50.0,
+      "passed_weight": 2,
+      "total_weight": 4,
+      "checks": [
+        {
+          "pillar": "task_discovery",
+          "id": "agents_guidance",
+          "title": "仓库入口规则可被 agent 读取",
+          "passed": true,
+          "evidence": "AGENTS.md",
+          "level": "L2",
+          "weight": 1
+        },
+        {
+          "pillar": "task_discovery",
+          "id": "skills_catalog",
+          "title": "至少有一个可迁移技能目录",
+          "passed": true,
+          "evidence": "skills/",
+          "level": "L2",
+          "weight": 1
+        },
+        {
+          "pillar": "task_discovery",
+          "id": "background_recovery",
+          "title": "后台任务具备恢复状态",
+          "passed": false,
+          "evidence": "pycursor/server.py",
+          "level": "L4",
+          "weight": 1
+        },
+        {
+          "pillar": "task_discovery",
+          "id": "worktree_orchestration",
+          "title": "存在 worktree 并行编排入口",
+          "passed": false,
+          "evidence": "parallel orchestrator",
+          "level": "L4",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "product",
+      "name": "产品与实验",
+      "score": 50.0,
+      "passed_weight": 2,
+      "total_weight": 4,
+      "checks": [
+        {
+          "pillar": "product",
+          "id": "demo",
+          "title": "提供可运行的演示素材",
+          "passed": true,
+          "evidence": "demo.mp4 + docs/demo.md",
+          "level": "L2",
+          "weight": 1
+        },
+        {
+          "pillar": "product",
+          "id": "reports",
+          "title": "旧增量报告可由程序复现",
+          "passed": true,
+          "evidence": "app/inspect.py + JSON reports",
+          "level": "L3",
+          "weight": 1
+        },
+        {
+          "pillar": "product",
+          "id": "review_metrics",
+          "title": "具备已知 bug PR 的召回率与误报评测",
+          "passed": false,
+          "evidence": "review_report.json",
+          "level": "L5",
+          "weight": 1
+        },
+        {
+          "pillar": "product",
+          "id": "unattended_merge",
+          "title": "具备无人值守审批与合并闸",
+          "passed": false,
+          "evidence": "app/review.py",
+          "level": "L5",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "level": "L1",
+      "name": "能跑",
+      "passed_weight": 4,
+      "total_weight": 4,
+      "ratio": 1.0,
+      "unlocked": true
+    },
+    {
+      "level": "L2",
+      "name": "写下来了",
+      "passed_weight": 10,
+      "total_weight": 10,
+      "ratio": 1.0,
+      "unlocked": true
+    },
+    {
+      "level": "L3",
+      "name": "标准化",
+      "passed_weight": 16,
+      "total_weight": 16,
+      "ratio": 1.0,
+      "unlocked": true
+    },
+    {
+      "level": "L4",
+      "name": "优化过",
+      "passed_weight": 0,
+      "total_weight": 2,
+      "ratio": 0.0,
+      "unlocked": false
+    },
+    {
+      "level": "L5",
+      "name": "不用管",
+      "passed_weight": 0,
+      "total_weight": 2,
+      "ratio": 0.0,
+      "unlocked": false
+    }
+  ],
+  "top_gaps": [
+    {
+      "pillar": "task_discovery",
+      "title": "后台任务具备恢复状态",
+      "needed_for": "L4",
+      "evidence": "pycursor/server.py"
+    },
+    {
+      "pillar": "task_discovery",
+      "title": "存在 worktree 并行编排入口",
+      "needed_for": "L4",
+      "evidence": "parallel orchestrator"
+    },
+    {
+      "pillar": "product",
+      "title": "具备已知 bug PR 的召回率与误报评测",
+      "needed_for": "L5",
+      "evidence": "review_report.json"
+    }
+  ],
+  "one_command_check": {
+    "command": "python scripts/check.py",
+    "passed": true,
+    "exit_code": 0,
+    "duration_ms": 7346,
+    "timed_out": false,
+    "output_tail": "_chat) ... ok\ntest_discovers_and_calls_stdio_tool (test_mcp.MCPTest.test_discovers_and_calls_stdio_tool) ... ok\ntest_cli_writes_program_generated_json (test_readiness.ReadinessReportTest.test_cli_writes_program_generated_json) ... ok\ntest_report_has_nine_pillars_and_reaches_l3 (test_readiness.ReadinessReportTest.test_report_has_nine_pillars_and_reaches_l3) ... ok\ntest_reviewer_has_isolated_read_only_context (test_reviewer.ReviewerAgentTest.test_reviewer_has_isolated_read_only_context) ... ok\ntest_reviewer_rejects_diff_command_with_output (test_reviewer.ReviewerAgentTest.test_reviewer_rejects_diff_command_with_output) ... ok\ntest_reviewer_rejects_non_diff_bash_command (test_reviewer.ReviewerAgentTest.test_reviewer_rejects_non_diff_bash_command) ... ok\ntest_deepseek_defaults (test_server.ServerTest.test_deepseek_defaults) ... ok\ntest_health_and_file_listing (test_server.ServerTest.test_health_and_file_listing) ... ok\ntest_task_manager_emits_sse_events (test_server.ServerTest.test_task_manager_emits_sse_events) ... ok\ntest_closing_frontmatter_is_required (test_skills.SkillsParserTest.test_closing_frontmatter_is_required) ... ok\ntest_default_template_round_trip (test_skills.SkillsParserTest.test_default_template_round_trip) ... ok\ntest_disabled_switch (test_skills.SkillsParserTest.test_disabled_switch) ... ok\ntest_duplicate_metadata_key (test_skills.SkillsParserTest.test_duplicate_metadata_key) ... ok\ntest_empty_registry_has_zero_token_stats (test_skills.SkillsParserTest.test_empty_registry_has_zero_token_stats) ... ok\ntest_existing_template_is_not_overwritten (test_skills.SkillsParserTest.test_existing_template_is_not_overwritten) ... ok\ntest_frontmatter_is_required (test_skills.SkillsParserTest.test_frontmatter_is_required) ... ok\ntest_invalid_skill_name (test_skills.SkillsParserTest.test_invalid_skill_name) ... ok\ntest_load_skills_from_project (test_skills.SkillsParserTest.test_load_skills_from_project) ... ok\ntest_loader_detects_mcp_usage (test_skills.SkillsParserTest.test_loader_detects_mcp_usage) ... ok\ntest_loader_detects_scripts_directory (test_skills.SkillsParserTest.test_loader_detects_scripts_directory) ... ok\ntest_loader_rejects_name_directory_mismatch (test_skills.SkillsParserTest.test_loader_rejects_name_directory_mismatch) ... ok\ntest_loader_requires_skill_file (test_skills.SkillsParserTest.test_loader_requires_skill_file) ... ok\ntest_loader_returns_empty_when_disabled (test_skills.SkillsParserTest.test_loader_returns_empty_when_disabled) ... ok\ntest_missing_completion_section (test_skills.SkillsParserTest.test_missing_completion_section) ... ok\ntest_required_fields (test_skills.SkillsParserTest.test_required_fields) ... ok\ntest_token_estimator_handles_english_and_chinese (test_skills.SkillsParserTest.test_token_estimator_handles_english_and_chinese) ... ok\ntest_token_stats_compare_catalog_with_full_documents (test_skills.SkillsParserTest.test_token_stats_compare_catalog_with_full_documents) ... ok\ntest_write_default_skill (test_skills.SkillsParserTest.test_write_default_skill) ... ok\ntest_bash_output_is_capped (test_tools.ToolsTest.test_bash_output_is_capped) ... ok\ntest_bash_returns_nonzero_as_observation (test_tools.ToolsTest.test_bash_returns_nonzero_as_observation) ... ok\ntest_bash_timeout_terminates_process (test_tools.ToolsTest.test_bash_timeout_terminates_process) ... ok\ntest_edit_requires_unique_match (test_tools.ToolsTest.test_edit_requires_unique_match) ... ok\ntest_image_is_returned_as_multimodal_block (test_tools.ToolsTest.test_image_is_returned_as_multimodal_block) ... ok\ntest_path_traversal_is_rejected (test_tools.ToolsTest.test_path_traversal_is_rejected) ... ok\ntest_read_has_line_numbers_and_pagination (test_tools.ToolsTest.test_read_has_line_numbers_and_pagination) ... ok\ntest_write_creates_parents_and_reports_line_counts (test_tools.ToolsTest.test_write_creates_parents_and_reports_line_counts) ... ok\n\n----------------------------------------------------------------------\nRan 72 tests in 5.856s\n\nOK\n"
+  },
+  "import_check": {
+    "command": "python -c import app, pycursor",
+    "passed": true,
+    "exit_code": 0,
+    "duration_ms": 61,
+    "timed_out": false,
+    "output_tail": ""
+  }
+}
