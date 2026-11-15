@@ -22,8 +22,8 @@
 
 ## 需要账号完成的步骤
 
-- [ ] 在 GitHub 创建 public 仓库
-- [ ] 按真实开发过程形成至少 15 次 commit，跨度至少 7 天
+- [x] 在 GitHub 创建 public 仓库
+- [x] 按真实开发过程形成 45 次 commit，跨度 12 天（2026-11-03 至 11-15）
 - [ ] 创建 `v1.5.0` tag
 - [ ] 创建 GitHub Release 并上传 `dist/PyCursor-Setup-1.5.0.exe`
 - [ ] 将仓库链接与 Release 链接填写到课程表格
