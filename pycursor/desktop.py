@@ -152,7 +152,7 @@ class DesktopApp:
         self.busy = False
 
         self.root = tk.Tk()
-        self.root.title("PyCursor · 本地编码智能体")
+        self.root.title("CodeProof · 本地编码智能体")
         self.root.geometry("1360x860")
         self.root.minsize(1040, 680)
         self.root.configure(bg=BG)
@@ -248,7 +248,7 @@ class DesktopApp:
         header.pack(fill="x")
         title = tk.Label(
             header,
-            text="PYCURSOR",
+            text="CODEPROOF",
             bg=PANEL,
             fg=TEXT,
             font=("Segoe UI Semibold", 15),
@@ -719,7 +719,7 @@ class DesktopApp:
                 "error",
             )
         elif kind == "assistant.message":
-            self._conversation_message("PyCursor", str(event.get("content", "")), "assistant")
+            self._conversation_message("CodeProof", str(event.get("content", "")), "assistant")
         elif kind in {"task.completed", "task.cancelled", "task.failed"}:
             self._finish_task(kind, event)
         elif kind == "stream.error":
@@ -754,7 +754,7 @@ class DesktopApp:
 
     def new_task(self) -> None:
         if self.busy:
-            messagebox.showinfo("PyCursor", "当前任务仍在运行，请先停止。")
+            messagebox.showinfo("CodeProof", "当前任务仍在运行，请先停止。")
             return
         self.session_id = None
         self.conversation.configure(state="normal")

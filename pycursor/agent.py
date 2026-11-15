@@ -23,7 +23,7 @@ from .tools import (
 )
 
 
-SYSTEM_PROMPT = """你是 PyCursor，一名在用户本地工作区工作的编码智能体。
+SYSTEM_PROMPT = """你是 CodeProof，一名在用户本地工作区工作的编码智能体。
 
 工作规则：
 1. 修改文件前先用 read 获取真实内容和行号。不得凭记忆猜测文件内容。

@@ -1,4 +1,4 @@
-"""PyCursor desktop coding agent."""
+"""CodeProof desktop coding agent (PyCursor package)."""
 
-__version__ = "1.0.0"
+__version__ = "1.5.0"
 
