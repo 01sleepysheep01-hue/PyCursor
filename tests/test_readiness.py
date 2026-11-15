@@ -47,7 +47,8 @@ class ReadinessReportTest(unittest.TestCase):
         self.assertEqual(report["level"], "L3")
         self.assertTrue(report["level_pass"])
         self.assertTrue(report["one_command_check"]["passed"])
-        self.assertEqual(len(report["top_gaps"]), 3)
+        self.assertGreaterEqual(len(report["top_gaps"]), 1)
+        self.assertLessEqual(len(report["top_gaps"]), 3)
 
     def test_cli_writes_program_generated_json(self) -> None:
         output = self.output_dir / "readiness_report.json"

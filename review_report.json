@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "execution_mode": "deterministic_static_review",
+  "description": "所有命中、误报与召回率均由本地规则和固定数据集实际运行生成；不调用外部 API，也不读取 API Key。",
+  "dataset_cases": 12,
+  "buggy_cases": 8,
+  "clean_cases": 4,
+  "known_bug_count": 8,
+  "hit_count": 8,
+  "recall": 1.0,
+  "false_positive_count": 0,
+  "thresholds": {
+    "min_recall": 0.6,
+    "max_false_positives": 3
+  },
+  "pass": true,
+  "bugs": [
+    {
+      "case_id": "BUG-001",
+      "bug_id": "hardcoded-password",
+      "description": "明文密码会随源码进入仓库。",
+      "expected_rule": "security.hardcoded-credential",
+      "path": "app/settings.py",
+      "line": 3,
+      "hit": true,
+      "matched_finding_id": "1d53f7f2f34fa4b5"
+    },
+    {
+      "case_id": "BUG-002",
+      "bug_id": "swallowed-exception",
+      "description": "异常被吞掉，调用方无法区分成功和失败。",
+      "expected_rule": "quality.swallowed-exception",
+      "path": "app/parser.py",
+      "line": 4,
+      "hit": true,
+      "matched_finding_id": "7c962d952fd880c5"
+    },
+    {
+      "case_id": "BUG-003",
+      "bug_id": "dynamic-code-execution",
+      "description": "攻击者可以提交任意 Python 表达式。",
+      "expected_rule": "security.dynamic-code-execution",
+      "path": "app/expression.py",
+      "line": 2,
+      "hit": true,
+      "matched_finding_id": "c3d3deeadf522fb4"
+    },
+    {
+      "case_id": "BUG-004",
+      "bug_id": "sql-injection",
+      "description": "用户输入直接进入 SQL，应使用参数化查询。",
+      "expected_rule": "security.sql-injection",
+      "path": "app/users.py",
+      "line": 2,
+      "hit": true,
+      "matched_finding_id": "6ebeef14416cd1e8"
+    },
+    {
+      "case_id": "BUG-005",
+      "bug_id": "debug-output",
+      "description": "调试输出绕过日志级别和脱敏流程。",
+      "expected_rule": "quality.debug-output",
+      "path": "app/store.py",
+      "line": 3,
+      "hit": true,
+      "matched_finding_id": "e4a5056aacc98a18"
+    },
+    {
+      "case_id": "BUG-006",
+      "bug_id": "missing-input-validation",
+      "description": "缺少参数时直接抛出未处理异常。",
+      "expected_rule": "correctness.direct-request-index",
+      "path": "app/http.py",
+      "line": 2,
+      "hit": true,
+      "matched_finding_id": "3eefe1cd255de1fe"
+    },
+    {
+      "case_id": "BUG-007",
+      "bug_id": "shell-injection",
+      "description": "命令字符串可能被 shell 解释为额外指令。",
+      "expected_rule": "security.shell-injection",
+      "path": "app/runner.py",
+      "line": 2,
+      "hit": true,
+      "matched_finding_id": "60b2345c65e943f3"
+    },
+    {
+      "case_id": "BUG-008",
+      "bug_id": "n-plus-one-query",
+      "description": "循环内执行查询，请求数会随数据量线性增长。",
+      "expected_rule": "performance.n-plus-one-query",
+      "path": "app/user_list.py",
+      "line": 3,
+      "hit": true,
+      "matched_finding_id": "22a4ff6a254c7040"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "BUG-001",
+      "title": "配置文件写入明文密码",
+      "clean_control": false,
+      "decision": "request_changes",
+      "finding_count": 1,
+      "known_bug_count": 1,
+      "hit_count": 1
+    },
+    {
+      "case_id": "BUG-002",
+      "title": "解析错误被静默吞掉",
+      "clean_control": false,
+      "decision": "with_comments",
+      "finding_count": 1,
+      "known_bug_count": 1,
+      "hit_count": 1
+    },
+    {
+      "case_id": "BUG-003",
+      "title": "使用 eval 执行用户输入",
+      "clean_control": false,
+      "decision": "request_changes",
+      "finding_count": 1,
+      "known_bug_count": 1,
+      "hit_count": 1
+    },
+    {
+      "case_id": "BUG-004",
+      "title": "SQL 使用字符串拼接",
+      "clean_control": false,
+      "decision": "request_changes",
+      "finding_count": 1,
+      "known_bug_count": 1,
+      "hit_count": 1
+    },
+    {
+      "case_id": "BUG-005",
+      "title": "生产路径残留调试输出",
+      "clean_control": false,
+      "decision": "with_comments",
+      "finding_count": 1,
+      "known_bug_count": 1,
+      "hit_count": 1
+    },
+    {
+      "case_id": "BUG-006",
+      "title": "直接索引请求参数",
+      "clean_control": false,
+      "decision": "with_comments",
+      "finding_count": 1,
+      "known_bug_count": 1,
+      "hit_count": 1
+    },
+    {
+      "case_id": "BUG-007",
+      "title": "以 shell 模式执行命令",
+      "clean_control": false,
+      "decision": "request_changes",
+      "finding_count": 1,
+      "known_bug_count": 1,
+      "hit_count": 1
+    },
+    {
+      "case_id": "BUG-008",
+      "title": "循环内逐条查询数据库",
+      "clean_control": false,
+      "decision": "with_comments",
+      "finding_count": 1,
+      "known_bug_count": 1,
+      "hit_count": 1
+    },
+    {
+      "case_id": "CLEAN-001",
+      "title": "从环境变量读取密码",
+      "clean_control": true,
+      "decision": "approved",
+      "finding_count": 0,
+      "known_bug_count": 0,
+      "hit_count": 0
+    },
+    {
+      "case_id": "CLEAN-002",
+      "title": "使用参数化 SQL",
+      "clean_control": true,
+      "decision": "approved",
+      "finding_count": 0,
+      "known_bug_count": 0,
+      "hit_count": 0
+    },
+    {
+      "case_id": "CLEAN-003",
+      "title": "使用安全的字面量解析",
+      "clean_control": true,
+      "decision": "approved",
+      "finding_count": 0,
+      "known_bug_count": 0,
+      "hit_count": 0
+    },
+    {
+      "case_id": "CLEAN-004",
+      "title": "请求参数缺失时可返回默认值",
+      "clean_control": true,
+      "decision": "approved",
+      "finding_count": 0,
+      "known_bug_count": 0,
+      "hit_count": 0
+    }
+  ],
+  "false_positives": [],
+  "specialist_findings": {
+    "correctness": 1,
+    "security": 4,
+    "performance": 1,
+    "quality": 2
+  },
+  "summary_comment": "## CodeProof review\n\n判定：`request_changes`\n数据集：12 个 PR，8 条已知 bug。\n召回：8/8（100%）。\n误报：0 条。\n\n逐条结果：\n- `BUG-001/hardcoded-password`：命中，app/settings.py:3，明文密码会随源码进入仓库。\n- `BUG-002/swallowed-exception`：命中，app/parser.py:4，异常被吞掉，调用方无法区分成功和失败。\n- `BUG-003/dynamic-code-execution`：命中，app/expression.py:2，攻击者可以提交任意 Python 表达式。\n- `BUG-004/sql-injection`：命中，app/users.py:2，用户输入直接进入 SQL，应使用参数化查询。\n- `BUG-005/debug-output`：命中，app/store.py:3，调试输出绕过日志级别和脱敏流程。\n- `BUG-006/missing-input-validation`：命中，app/http.py:2，缺少参数时直接抛出未处理异常。\n- `BUG-007/shell-injection`：命中，app/runner.py:2，命令字符串可能被 shell 解释为额外指令。\n- `BUG-008/n-plus-one-query`：命中，app/user_list.py:3，循环内执行查询，请求数会随数据量线性增长。\n"
+}

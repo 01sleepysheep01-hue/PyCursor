@@ -1,4 +1,4 @@
-# PyCursor 大作业报告
+# CodeProof（PyCursor v1.5）大作业报告
 
 ## 1. 目标与结果
 
@@ -138,7 +138,38 @@ PostToolUse 摘要最初把失败标题后第一行含 `assert` 的文本当成�
 误触发，而且 `skills/` 是可随项目迁移的独立目录；其次是它不依赖某次模型回复，
 即使以后更换模型或服务商，按需加载仍然成立。
 
-## 10. 已知限制
+## 10. 可验证、并行与代码评审增量
+
+本单元的三项增量都生成可复核的程序报告，没有用截图代替运行结果。
+
+### 10.1 D：可验证性体检
+
+`python -m app.readiness --out readiness_report.json` 会执行统一检查，并按九根柱子
+和五个等级给仓库打分。最新报告为 97.1 分、达到 L3，且“一条命令跑测试”为真。
+报告保留每项检查的证据、所解锁等级和最该补的缺口；当前只剩 1 个 L4 缺口，
+不再固定编造三条建议。
+
+### 10.2 E：两个隔离工位
+
+`python -m app.parallel --out parallel_report.json` 从同一 base commit 创建两个真实
+Git worktree：一个补稳定的评审发现数据契约，另一个补评审工作流文档。两个 worker
+在各自目录中执行测试并提交，之后以 `--no-ff` 合回主分支。报告记录的分支、提交、
+测试结果和合并且均为真实 Git 操作：两个 worker 测试退出码均为 0，冲突文件为空，
+合并后的全量测试也通过。该次并行墙钟时间约 18 秒，两个任务只修改互不重叠的文件。
+
+### 10.3 F：评审自己
+
+`python -m pycursor review --dataset review_dataset --out review_report.json` 对 12 个
+固定 PR 样例运行 correctness、security、performance、quality 四类专科规则，并由
+汇总器给出 `approved`、`with_comments` 或 `request_changes` 判定。数据集包含 8 个
+已知 bug 和 4 个干净对照；最新报告逐条命中 8/8，召回率 100%，误报 0 条，达到
+课程“召回不低于 60%、误报不超过 3 条”的及格线。`review_comment.md` 是同一次运行
+生成的单条汇总评论，finding ID 由路径、行号、规则和消息稳定计算。
+
+为保证课堂结果可离线复现，数据集评测使用确定性本地规则，不调用 API，也不读取
+API Key；常规代码审查仍可使用已有的只读 reviewer 子 Agent 调用 DeepSeek 语义审查。
+
+## 11. 已知限制
 
 - `bash` 跟随应用用户权限。路径校验只约束 read/write/edit，命令自身仍可访问
   操作系统允许的资源；生产环境应配合容器、低权限账户或额外策略。

@@ -1,7 +1,10 @@
-# PyCursor
+# CodeProof（原 PyCursor）
 
-一个可双击打开的本地桌面编码智能体。后端负责模型循环、四个编码工具、MCP
-连接和事件流；Tkinter 前端只负责展示对话、文件、工具活动与 diff。
+一个可双击打开的本地桌面编码智能体。产品展示名为 CodeProof，Python 包和可执行
+文件仍沿用 PyCursor 以保持兼容。后端负责模型循环、四个编码工具、MCP 连接和事件
+流；Tkinter 前端只负责展示对话、文件、工具活动与 diff。
+
+> 模型负责猜，码证负责查。每一步，都有证据。
 
 实现对应课程第 35 页大作业及第 36–39 页验收要求。
 
@@ -228,6 +231,17 @@ python -m app.parallel --out parallel_report.json
 
 报告记录两个分支、各自耗时、改动文件、提交哈希、合并冲突文件和合并后的测试结果。
 详细说明见 `docs/parallel.md`。
+
+## 自我代码评审
+
+对固定 bug 数据集运行独立评审规则，并生成一份 JSON 和一条汇总评论：
+
+```powershell
+python -m pycursor review --dataset review_dataset --out review_report.json
+```
+
+报告逐条列出已知 bug 是否命中、误报数、召回率和评审判定。详细说明见
+`docs/review.md`。
 
 ## 测试
 
