@@ -5,6 +5,7 @@
 - `pycursor/reviewer.py`：独立上下文的只读 diff reviewer。
 - `app/inspect.py`：独立生成作业报告，不依赖 UI。
 - `app/readiness.py`：按九根柱子和五个等级生成仓库体检报告。
+- `app/parallel.py`：创建两个 Git worktree，并行执行、测试并合并任务分支。
 - `skills/`：可带走的技能目录，每个子目录必须有 `SKILL.md`。
 - `tests/`：标准库 `unittest` 测试；新增能力必须有开关和回归测试。
 - `.githooks/`：提交前敏感文件扫描；仓库使用 `.githooks`。
@@ -13,6 +14,7 @@
 
 - 必需检查：`python scripts/check.py`
 - 仓库体检：`python -m app.readiness --out readiness_report.json`
+- 并行演示：`python -m app.parallel --out parallel_report.json`
 - 技能报告：`python -m app.inspect skills --out skill_report.json`
 - 启动桌面版：`python -m pycursor`
 

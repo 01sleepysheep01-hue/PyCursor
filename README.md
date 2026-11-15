@@ -218,6 +218,17 @@ python -m app.readiness --out readiness_report.json
 报告记录每项检查的证据、L1 至 L5 的解锁情况、当前等级和最该补的三项。详细说明见
 `docs/readiness.md`。
 
+## 双 worktree 并行
+
+创建两个独立分支和工作目录，同时完成互不相交的任务，再合并并运行全量测试：
+
+```powershell
+python -m app.parallel --out parallel_report.json
+```
+
+报告记录两个分支、各自耗时、改动文件、提交哈希、合并冲突文件和合并后的测试结果。
+详细说明见 `docs/parallel.md`。
+
 ## 测试
 
 ```powershell

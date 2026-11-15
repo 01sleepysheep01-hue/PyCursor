@@ -15,6 +15,7 @@ dependencies = []
 [project.scripts]
 pycursor = "pycursor.__main__:main"
 pycursor-server = "pycursor.server:cli"
+pycursor-parallel = "app.parallel:main"
 
 [tool.setuptools.packages.find]
 include = ["pycursor*", "app*"]
