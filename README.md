@@ -10,7 +10,8 @@
 
 ## 换一台电脑后，三步启动
 
-1. 下载并双击 `PyCursor-Setup-1.0.0.exe`，安装完成后打开 PyCursor。
+1. 用 `scripts\build_windows.ps1` 和 `scripts\build_sfx_setup.ps1` 构建后，双击
+   `PyCursor-Setup-1.5.0.exe`，安装完成后打开 CodeProof。
 2. 点击右上角“设置”，填写 DeepSeek API Key，Base URL 保持
    `https://api.deepseek.com/v1`，模型填写 `deepseek-chat` 或账户支持的
    `deepseek-v4-flash`。
@@ -53,7 +54,7 @@
 
 ## 直接安装（推荐）
 
-双击 `dist\PyCursor-Setup-1.0.0.exe`。安装器会安装到当前用户目录、创建快捷方式并
+双击 `dist\PyCursor-Setup-1.5.0.exe`。安装器会安装到当前用户目录、创建快捷方式并
 启动窗口。默认模型为 DeepSeek `deepseek-chat`，进入右上角“设置”填写
 DeepSeek API Key 后即可使用。
 
@@ -272,7 +273,7 @@ python scripts\check.py
 .\scripts\build_sfx_setup.ps1
 ```
 
-该脚本使用 WinRAR 自解压模块生成 `dist\PyCursor-Setup-1.0.0.exe`，安装到当前用户的
+该脚本使用 WinRAR 自解压模块生成 `dist\PyCursor-Setup-1.5.0.exe`，安装到当前用户的
 `%LOCALAPPDATA%\Programs\PyCursor` 并创建桌面与开始菜单快捷方式。构建机需要 WinRAR；
 安装后的用户不需要 WinRAR、Python 或其他运行时。`scripts\installer.iss` 保留为
 Inno Setup 6 的可选替代方案。

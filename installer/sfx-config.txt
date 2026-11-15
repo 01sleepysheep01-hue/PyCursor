@@ -1,6 +1,6 @@
 ;!@Install@!UTF-8!
-Title=PyCursor 1.0.0
-Text=Install PyCursor for the current Windows user.
+Title=CodeProof 1.5.0
+Text=Install CodeProof for the current Windows user.
 Setup=<Hide>setup.cmd
 TempMode
 Silent=1

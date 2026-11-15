@@ -92,7 +92,7 @@ MCP 客户端在独立进程中启动 server，通过 JSON-RPC over stdio 完成
 `scripts/build_windows.ps1` 使用 PyInstaller 生成带桌面入口的 Windows 目录构建，
 并压缩为 `PyCursor-Windows-x64.zip`；解压后双击 `PyCursor.exe` 即可运行，不需要
 用户已安装 Python。`scripts/build_sfx_setup.ps1` 再把这个目录构建封装为
-`PyCursor-Setup-1.0.0.exe`，安装到当前用户目录并创建快捷方式。
+`PyCursor-Setup-1.5.0.exe`，安装到当前用户目录并创建快捷方式。
 `scripts/installer.iss` 保留为 Inno Setup 6 的替代路径。
 `scripts/package_portable.ps1` 可生成源码便携包。
 

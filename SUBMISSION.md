@@ -24,8 +24,8 @@
 
 - [ ] 在 GitHub 创建 public 仓库
 - [ ] 按真实开发过程形成至少 15 次 commit，跨度至少 7 天
-- [ ] 创建 `v1.0.0` tag
-- [ ] 创建 GitHub Release 并上传 `dist/PyCursor-Setup-1.0.0.exe`
+- [ ] 创建 `v1.5.0` tag
+- [ ] 创建 GitHub Release 并上传 `dist/PyCursor-Setup-1.5.0.exe`
 - [ ] 将仓库链接与 Release 链接填写到课程表格
 - [ ] 按 `docs/demo.md` 用自己的电脑完成 5 分钟现场演示
 
@@ -41,7 +41,7 @@
 ## 现场演示前检查
 
 1. 关闭旧版 PyCursor。
-2. 重新安装本次提交目录中的 `dist/PyCursor-Setup-1.0.0.exe`。
+2. 用最终源码构建并重新安装 `dist/PyCursor-Setup-1.5.0.exe`。
 3. 打开设置，确认 Base URL 为 `https://api.deepseek.com/v1`。
 4. 确认模型为服务商实际开放的 `deepseek-chat` 或 `deepseek-v4-flash`。
 5. 用“设置”选择演示工作区。

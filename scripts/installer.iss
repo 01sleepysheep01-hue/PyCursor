@@ -1,6 +1,6 @@
-#define MyAppName "PyCursor"
-#define MyAppVersion "1.0.0"
-#define MyAppPublisher "PyCursor"
+#define MyAppName "CodeProof"
+#define MyAppVersion "1.5.0"
+#define MyAppPublisher "CodeProof"
 #define MyAppExeName "PyCursor.exe"
 
 [Setup]
