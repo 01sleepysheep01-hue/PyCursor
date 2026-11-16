@@ -1,6 +1,7 @@
 param(
     [string]$PythonCommand = "python",
-    [string]$Version = "1.5.0"
+    [string]$Version = "1.5.0",
+    [string]$Wheelhouse = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,13 +15,17 @@ if (-not (Test-Path -LiteralPath $BuildPython)) {
     }
 }
 
-& $BuildPython -m pip install --upgrade pip
+& $BuildPython -c "import PyInstaller" 2>$null
 if ($LASTEXITCODE -ne 0) {
-    throw "pip bootstrap failed with exit code $LASTEXITCODE"
-}
-& $BuildPython -m pip install pyinstaller
-if ($LASTEXITCODE -ne 0) {
-    throw "PyInstaller installation failed with exit code $LASTEXITCODE"
+    if ($Wheelhouse) {
+        & $BuildPython -m pip install --no-index --find-links $Wheelhouse "pyinstaller==6.22.3"
+    }
+    else {
+        & $BuildPython -m pip install pyinstaller
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw "PyInstaller installation failed with exit code $LASTEXITCODE"
+    }
 }
 
 Push-Location $ProjectRoot
