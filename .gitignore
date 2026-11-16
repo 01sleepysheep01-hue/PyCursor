@@ -6,6 +6,8 @@
 !**/.env.example
 .venv/
 .build-venv/
+.build-venv-*/
+.build-tools/
 .build-tmp/
 .build-pyinstaller/
 __pycache__/
@@ -21,4 +23,8 @@ htmlcov/
 .test-tmp/
 .demo-run/
 .sfx-stage/
+.edge-test-*/
+.chrome-test-*/
+.git-alt-index*
+.git-alt-objects/
 

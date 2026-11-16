@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import json
+import os
+import secrets
 import threading
 import time
 import uuid
@@ -19,6 +22,21 @@ from .events import EventBus, serialize_sse
 from .mcp import MCPManager
 from .sessions import SessionStore
 from .tools import ToolContext, ToolError, execute_tool
+
+
+WEB_ROOT = Path(__file__).resolve().parent.parent / "web"
+WEB_ASSETS = {
+    "index.html": "text/html; charset=utf-8",
+    "styles.css": "text/css; charset=utf-8",
+    "app.js": "text/javascript; charset=utf-8",
+}
+
+
+def is_loopback_host(host: str) -> bool:
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return host.strip().lower() == "localhost"
 
 
 @dataclass(slots=True)
@@ -145,14 +163,28 @@ class Application:
         *,
         start_mcp: bool = True,
         sessions: SessionStore | None = None,
+        web_token: str = "",
+        mcp: MCPManager | None = None,
     ) -> None:
         self.settings = settings
+        self.web_token = web_token.strip()
+        self.web_session = secrets.token_urlsafe(32) if self.web_token else ""
         self.logs: list[str] = []
         self._log_lock = threading.Lock()
-        self.mcp = MCPManager(Path(settings.mcp_config), log=self.log)
-        if start_mcp and settings.auto_start_mcp:
+        self.mcp = mcp or MCPManager(Path(settings.mcp_config), log=self.log)
+        if mcp is None and start_mcp and settings.auto_start_mcp:
             self.mcp.start_enabled()
         self.tasks = TaskManager(settings, mcp=self.mcp, sessions=sessions)
+
+    def web_login(self, token: str) -> bool:
+        if not self.web_token:
+            return True
+        return secrets.compare_digest(str(token), self.web_token)
+
+    def web_authorized(self, session: str) -> bool:
+        if not self.web_token:
+            return True
+        return secrets.compare_digest(str(session), self.web_session)
 
     def log(self, message: str) -> None:
         with self._log_lock:
@@ -257,14 +289,62 @@ class APIHandler(BaseHTTPRequestHandler):
             raise ValueError("JSON 请求体必须是对象")
         return parsed
 
-    def _send_json(self, payload: dict[str, Any], status: int = 200) -> None:
+    def _send_json(
+        self,
+        payload: dict[str, Any],
+        status: int = 200,
+        extra_headers: dict[str, str] | None = None,
+    ) -> None:
         encoded = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(encoded)))
         self.send_header("Cache-Control", "no-store")
+        for key, value in (extra_headers or {}).items():
+            self.send_header(key, value)
         self.end_headers()
         self.wfile.write(encoded)
+
+    def _send_static(self, path: str) -> bool:
+        name = "index.html" if path in {"", "/"} else path.lstrip("/")
+        if name not in WEB_ASSETS:
+            return False
+        root = WEB_ROOT.resolve()
+        target = (root / name).resolve()
+        try:
+            target.relative_to(root)
+        except ValueError:
+            return False
+        if not target.is_file():
+            return False
+        data = target.read_bytes()
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", WEB_ASSETS[name])
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; connect-src 'self'; img-src 'self' data:; "
+            "style-src 'self'; script-src 'self'; base-uri 'none'; "
+            "form-action 'self'; frame-ancestors 'none'",
+        )
+        self.end_headers()
+        self.wfile.write(data)
+        return True
+
+    def _web_session(self) -> str:
+        raw = self.headers.get("Cookie", "")
+        for part in raw.split(";"):
+            key, separator, value = part.strip().partition("=")
+            if separator and key == "codeproof_session":
+                return value
+        return ""
+
+    def _authorized(self) -> bool:
+        return self.server.app.web_authorized(self._web_session())
 
     def _send_error_json(self, error: Exception, status: int = 400) -> None:
         self._send_json(
@@ -276,6 +356,11 @@ class APIHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         try:
+            if self._send_static(path):
+                return
+            if path.startswith("/api/") and not self._authorized():
+                self._send_error_json("需要访问令牌", HTTPStatus.UNAUTHORIZED)
+                return
             if path == "/api/health":
                 self._send_json(
                     {
@@ -283,6 +368,8 @@ class APIHandler(BaseHTTPRequestHandler):
                         "version": __version__,
                         "model": self.server.app.settings.model,
                         "workspace": self.server.app.settings.workspace,
+                        "auth_required": bool(self.server.app.web_token),
+                        "web": True,
                     }
                 )
                 return
@@ -323,6 +410,20 @@ class APIHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         try:
+            if path == "/api/web/login":
+                body = self._json_body()
+                if not self.server.app.web_login(str(body.get("token", ""))):
+                    self._send_error_json("访问令牌不正确", HTTPStatus.UNAUTHORIZED)
+                    return
+                headers: dict[str, str] = {}
+                if self.server.app.web_session:
+                    cookie = f"codeproof_session={self.server.app.web_session}; Path=/; HttpOnly; SameSite=Strict; Max-Age=43200"
+                    headers["Set-Cookie"] = cookie
+                self._send_json({"ok": True}, extra_headers=headers)
+                return
+            if path.startswith("/api/") and not self._authorized():
+                self._send_error_json("需要访问令牌", HTTPStatus.UNAUTHORIZED)
+                return
             if path == "/api/tasks":
                 body = self._json_body()
                 task = self.server.app.tasks.submit(
@@ -398,8 +499,25 @@ def start_server(
     port: int = 8765,
     start_mcp: bool = True,
     sessions: SessionStore | None = None,
+    web_token: str | None = None,
+    mcp: MCPManager | None = None,
 ) -> tuple[PyCursorHTTPServer, Application]:
-    app = Application(settings, start_mcp=start_mcp, sessions=sessions)
+    token = os.environ.get("PYCURSOR_WEB_TOKEN", "") if web_token is None else web_token
+    token = token.strip()
+    if token and len(token) < 12:
+        raise ValueError("PYCURSOR_WEB_TOKEN 至少需要 12 个字符")
+    if not is_loopback_host(host) and not token:
+        raise ValueError(
+            "监听局域网或公网地址时必须设置 PYCURSOR_WEB_TOKEN，"
+            "避免未授权用户执行工作区命令。"
+        )
+    app = Application(
+        settings,
+        start_mcp=start_mcp,
+        sessions=sessions,
+        web_token=token,
+        mcp=mcp,
+    )
     server = PyCursorHTTPServer((host, port), app)
     thread = threading.Thread(
         target=server.serve_forever,
@@ -427,8 +545,12 @@ def cli() -> None:
         start_mcp=not args.no_mcp,
     )
     host, port = server.server_address
-    print(f"PyCursor backend: http://{host}:{port}")
+    display_host = "127.0.0.1" if host in {"0.0.0.0", "::"} else host
+    print(f"CodeProof H5: http://{display_host}:{port}/")
+    print(f"Backend API: http://{display_host}:{port}/api/health")
     print(f"Workspace: {settings.workspace}")
+    web_token_status = "required" if app.web_token else "not required"
+    print(f"Web token: {web_token_status}")
     print(f"MCP: {json.dumps(app.mcp.status(), ensure_ascii=False)}")
     try:
         while True:

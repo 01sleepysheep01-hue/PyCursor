@@ -1,6 +1,6 @@
 param(
     [string]$RarExecutable = "C:\Program Files\WinRAR\Rar.exe",
-    [string]$Version = "1.5.0"
+    [string]$Version = "1.6.0"
 )
 
 $ErrorActionPreference = "Stop"

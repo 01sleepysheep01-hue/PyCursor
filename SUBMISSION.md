@@ -19,12 +19,14 @@
 - [x] 九根柱子仓库体检：`readiness_report.json`
 - [x] 两个真实 worktree 并行与合并：`parallel_report.json`
 - [x] 12 个样例、四条专科规则和单条汇总评论：`review_report.json`、`review_comment.md`
+- [x] 微信内置浏览器可用的响应式 H5，与桌面版共享后端、四个工具和 SSE 轨迹
+- [x] H5 一次性访问令牌、HttpOnly Cookie、同源 CSP 和非本机监听保护
 
 ## 需要账号完成的步骤
 
 - [x] 在 GitHub 创建 public 仓库
 - [x] 按真实开发过程形成 45 次 commit，跨度 12 天（2026-11-03 至 11-15）
-- [x] 创建并推送 annotated tag `v1.5.0`
+- [x] 创建并推送 annotated tag `v1.5.0`，H5 版本发布 `v1.6.0`
 - [x] 创建 GitHub Release 并上传安装程序、免安装包、源码包与 SHA256 清单
 - [ ] 将仓库链接与 Release 链接填写到课程表格
 - [ ] 按 `docs/demo.md` 用自己的电脑完成 5 分钟现场演示
@@ -37,20 +39,21 @@
 - D 可验证性：L3，97.1 分，一条命令测试为真，报告见 `readiness_report.json`。
 - E 并行：2 个 worker 均通过测试，合并冲突 0 个，报告见 `parallel_report.json`。
 - F 评审：已知 bug 命中 8/8，召回率 100%，误报 0 条，见 `review_report.json`。
-- 当前源码版本为 1.5.0；最终源码已重新构建，安装版和免安装版均完成窗口冒烟测试。
+- 当前源码版本为 1.6.0；H5 随 Windows 安装包提供，桌面右上角“手机 H5”可直接启动。
 
 ## 现场演示前检查
 
 1. 关闭旧版 PyCursor。
-2. 用最终源码构建并重新安装 `dist/PyCursor-Setup-1.5.0.exe`。
+2. 用最终源码构建并重新安装 `dist/PyCursor-Setup-1.6.0.exe`。
 3. 打开设置，确认 Base URL 为 `https://api.deepseek.com/v1`。
 4. 确认模型为服务商实际开放的 `deepseek-chat` 或 `deepseek-v4-flash`。
 5. 用“设置”选择演示工作区。
 6. 打开 `docs/demo.md`，按 5 分钟流程练习。
+7. 手机与电脑连同一 Wi-Fi，用“手机 H5”生成链接和令牌；演示结束点击“停止 H5”。
 
 ## 提交链接
 
 - GitHub 仓库：https://github.com/01sleepysheep01-hue/PyCursor
-- GitHub Release：https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.5.0
-- 安装程序：https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/PyCursor-Setup-1.5.0.exe
+- GitHub Release：https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.6.0
+- 安装程序：https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/PyCursor-Setup-1.6.0.exe
 

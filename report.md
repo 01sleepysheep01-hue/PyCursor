@@ -1,4 +1,4 @@
-# CodeProof（PyCursor v1.5）大作业报告
+# CodeProof（PyCursor v1.6）大作业报告
 
 ## 1. 目标与结果
 
@@ -18,10 +18,11 @@
 ## 2. 架构
 
 ```text
-Tkinter 桌面 UI
-       |
-       | HTTP + SSE
-       v
+Tkinter 桌面 UI         微信内置浏览器 H5
+       |                        |
+       +---------- HTTP + SSE --+
+                    |
+                    v
 本地 HTTP API -> TaskManager -> AgentRunner -> LLM
                                   |             |
                                   |             +-- DeepSeek Chat Completions
@@ -30,10 +31,12 @@ Tkinter 桌面 UI
                                   +-- MCPManager -> stdio MCP servers
 ```
 
-选择本地 HTTP 层而不是在 UI 线程直接调用智能体的原因有两个：
+选择本地 HTTP 层而不是在 UI 线程直接调用智能体的原因有三个：
 
 1. 后端能用 `curl -N` 独立验收，符合大作业要求。
 2. UI 只是事件消费者，后续替换成 pywebview、Electron 或 Tauri 时，循环不用重写。
+3. 同一套 API 可以直接服务响应式 H5，手机在微信中打开后仍调用当前电脑上的
+   DeepSeek、四个工具、MCP 和真实工作区。
 
 ## 3. 四个工具的取舍
 
@@ -92,7 +95,7 @@ MCP 客户端在独立进程中启动 server，通过 JSON-RPC over stdio 完成
 `scripts/build_windows.ps1` 使用 PyInstaller 生成带桌面入口的 Windows 目录构建，
 并压缩为 `PyCursor-Windows-x64.zip`；解压后双击 `PyCursor.exe` 即可运行，不需要
 用户已安装 Python。`scripts/build_sfx_setup.ps1` 再把这个目录构建封装为
-`PyCursor-Setup-1.5.0.exe`，安装到当前用户目录并创建快捷方式。
+`PyCursor-Setup-1.6.0.exe`，安装到当前用户目录并创建快捷方式。
 `scripts/installer.iss` 保留为 Inno Setup 6 的替代路径。
 `scripts/package_portable.ps1` 可生成源码便携包。
 

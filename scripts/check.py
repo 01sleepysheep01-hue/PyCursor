@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE_ROOTS = ("app", "pycursor", "scripts", "tests", "mcp_servers")
+SOURCE_ROOTS = ("app", "pycursor", "scripts", "tests", "mcp_servers", "web")
 EXCLUDED_DIRS = {
     ".git",
     ".build-tmp",
@@ -24,7 +24,10 @@ EXCLUDED_DIRS = {
 }
 TEXT_SUFFIXES = {
     ".cmd",
+    ".css",
+    ".html",
     ".ini",
+    ".js",
     ".iss",
     ".json",
     ".md",

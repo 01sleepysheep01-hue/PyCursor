@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import json
 import queue
+import secrets
+import socket
 import threading
 import time
 import tkinter as tk
 import urllib.error
 import urllib.request
+import webbrowser
 from http.client import HTTPResponse
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
@@ -28,6 +31,23 @@ ACCENT = "#70a5ff"
 SUCCESS = "#64d69a"
 WARNING = "#f2bd63"
 ERROR = "#ff6b7a"
+
+
+def lan_ipv4_addresses() -> list[str]:
+    addresses: set[str] = set()
+    try:
+        for item in socket.getaddrinfo(
+            socket.gethostname(), None, family=socket.AF_INET, type=socket.SOCK_STREAM
+        ):
+            addresses.add(str(item[4][0]))
+    except OSError:
+        pass
+    addresses = {
+        address
+        for address in addresses
+        if not address.startswith(("127.", "169.254.")) and address != "0.0.0.0"
+    }
+    return sorted(addresses)
 
 
 class HTTPAPI:
@@ -150,6 +170,10 @@ class DesktopApp:
         self.session_id: str | None = None
         self.activity_items: dict[str, str] = {}
         self.busy = False
+        self.h5_server: PyCursorHTTPServer | None = None
+        self.h5_application: Application | None = None
+        self.h5_token = ""
+        self.h5_urls: list[str] = []
 
         self.root = tk.Tk()
         self.root.title("CodeProof · 本地编码智能体")
@@ -276,6 +300,12 @@ class DesktopApp:
         ttk.Button(header, text="新任务", style="Quiet.TButton", command=self.new_task).pack(
             side="right", padx=(8, 0)
         )
+        ttk.Button(
+            header,
+            text="手机 H5",
+            style="Quiet.TButton",
+            command=self.open_h5_access,
+        ).pack(side="right", padx=(8, 0))
 
         body = ttk.Panedwindow(self.root, orient="horizontal")
         body.pack(fill="both", expand=True, padx=9, pady=(0, 7))
@@ -904,6 +934,180 @@ class DesktopApp:
             entry.delete(0, "end")
             entry.insert(0, selected)
 
+    def _start_h5_service(self) -> None:
+        if self.h5_server is not None:
+            return
+        if not self.settings.api_key:
+            raise ValueError("请先在“设置”中填写 DeepSeek API Key")
+        token = secrets.token_urlsafe(24)
+        try:
+            server, application = start_server(
+                self.settings,
+                host="0.0.0.0",
+                port=8765,
+                start_mcp=False,
+                sessions=self.application.tasks.sessions,
+                web_token=token,
+                mcp=self.application.mcp,
+            )
+        except OSError:
+            server, application = start_server(
+                self.settings,
+                host="0.0.0.0",
+                port=0,
+                start_mcp=False,
+                sessions=self.application.tasks.sessions,
+                web_token=token,
+                mcp=self.application.mcp,
+            )
+        port = int(server.server_address[1])
+        self.h5_server = server
+        self.h5_application = application
+        self.h5_token = token
+        self.h5_urls = [f"http://127.0.0.1:{port}/"]
+        self.h5_urls.extend(f"http://{address}:{port}/" for address in lan_ipv4_addresses())
+
+    def _stop_h5_service(self) -> None:
+        server = self.h5_server
+        self.h5_server = None
+        self.h5_application = None
+        self.h5_token = ""
+        self.h5_urls = []
+        if server is not None:
+            server.shutdown()
+            server.server_close()
+
+    def open_h5_access(self) -> None:
+        try:
+            self._start_h5_service()
+        except Exception as exc:
+            messagebox.showerror("H5 启动失败", str(exc), parent=self.root)
+            return
+
+        dialog = tk.Toplevel(self.root)
+        dialog.title("CodeProof 手机 H5")
+        dialog.configure(bg=PANEL)
+        dialog.transient(self.root)
+        dialog.geometry("680x500")
+        dialog.minsize(600, 440)
+
+        content = tk.Frame(dialog, bg=PANEL, padx=24, pady=20)
+        content.pack(fill="both", expand=True)
+        tk.Label(
+            content,
+            text="在微信中打开 CodeProof",
+            bg=PANEL,
+            fg=TEXT,
+            font=("Microsoft YaHei UI", 16, "bold"),
+        ).pack(anchor="w")
+        tk.Label(
+            content,
+            text="手机与电脑连接同一 Wi-Fi。把局域网地址发送到微信文件传输助手，再输入下方令牌。",
+            bg=PANEL,
+            fg=MUTED,
+            justify="left",
+            wraplength=620,
+            font=("Microsoft YaHei UI", 9),
+        ).pack(anchor="w", pady=(7, 14))
+
+        for index, url in enumerate(self.h5_urls):
+            row = tk.Frame(content, bg=PANEL)
+            row.pack(fill="x", pady=4)
+            tk.Label(
+                row,
+                text="本机预览" if index == 0 else "手机 / 微信",
+                width=11,
+                anchor="w",
+                bg=PANEL,
+                fg=MUTED,
+                font=("Microsoft YaHei UI", 9),
+            ).pack(side="left")
+            entry = tk.Entry(
+                row,
+                bg=PANEL_ALT,
+                fg=TEXT,
+                insertbackground=TEXT,
+                relief="flat",
+                font=("Consolas", 10),
+            )
+            entry.insert(0, url)
+            entry.configure(state="readonly", readonlybackground=PANEL_ALT)
+            entry.pack(side="left", fill="x", expand=True, padx=(7, 7), ipady=7)
+            ttk.Button(
+                row,
+                text="复制",
+                style="Quiet.TButton",
+                command=lambda value=url: self._copy_text(value),
+            ).pack(side="right")
+
+        token_row = tk.Frame(content, bg=PANEL)
+        token_row.pack(fill="x", pady=(14, 4))
+        tk.Label(
+            token_row,
+            text="访问令牌",
+            width=11,
+            anchor="w",
+            bg=PANEL,
+            fg=MUTED,
+            font=("Microsoft YaHei UI", 9),
+        ).pack(side="left")
+        token_entry = tk.Entry(
+            token_row,
+            bg=PANEL_ALT,
+            fg=SUCCESS,
+            insertbackground=TEXT,
+            relief="flat",
+            font=("Consolas", 10),
+        )
+        token_entry.insert(0, self.h5_token)
+        token_entry.configure(state="readonly", readonlybackground=PANEL_ALT)
+        token_entry.pack(side="left", fill="x", expand=True, padx=(7, 7), ipady=7)
+        ttk.Button(
+            token_row,
+            text="复制",
+            style="Quiet.TButton",
+            command=lambda: self._copy_text(self.h5_token),
+        ).pack(side="right")
+
+        warning = tk.Label(
+            content,
+            text="H5 与桌面版拥有相同工作区权限。不要把令牌或链接发到公开群聊；演示结束后立即停止 H5。",
+            bg="#2b2115",
+            fg=WARNING,
+            justify="left",
+            wraplength=600,
+            padx=12,
+            pady=10,
+            font=("Microsoft YaHei UI", 9),
+        )
+        warning.pack(fill="x", pady=(16, 12))
+
+        buttons = tk.Frame(content, bg=PANEL)
+        buttons.pack(side="bottom", fill="x")
+        ttk.Button(
+            buttons,
+            text="停止 H5",
+            style="Danger.TButton",
+            command=lambda: (dialog.destroy(), self._stop_h5_service()),
+        ).pack(side="right", padx=(8, 0))
+        ttk.Button(
+            buttons,
+            text="关闭窗口",
+            style="Quiet.TButton",
+            command=dialog.destroy,
+        ).pack(side="right", padx=(8, 0))
+        ttk.Button(
+            buttons,
+            text="电脑上预览",
+            style="Accent.TButton",
+            command=lambda: webbrowser.open(self.h5_urls[0]),
+        ).pack(side="left")
+
+    def _copy_text(self, value: str) -> None:
+        self.root.clipboard_clear()
+        self.root.clipboard_append(value)
+        self._set_status("已复制到剪贴板", SUCCESS)
+
     def _set_status(self, text: str, color: str = MUTED) -> None:
         self.status_label.configure(text=text, fg=color)
 
@@ -913,6 +1117,7 @@ class DesktopApp:
     def close(self) -> None:
         if self.stream:
             self.stream.close()
+        self._stop_h5_service()
         self.server.shutdown()
         self.server.server_close()
         self.application.mcp.stop_all()

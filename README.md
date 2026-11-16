@@ -10,16 +10,16 @@
 
 ## 下载
 
-- [GitHub Release：CodeProof 1.5.0](https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.5.0)
-- [Windows 安装程序](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/PyCursor-Setup-1.5.0.exe)
-- [Windows 免安装包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/PyCursor-Windows-x64.zip)
-- [源码与作业材料包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/PyCursor-Portable-1.5.0.zip)
-- [SHA256 校验清单](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/SHA256SUMS.txt)
+- [GitHub Release：CodeProof 1.6.0](https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.6.0)
+- [Windows 安装程序](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/PyCursor-Setup-1.6.0.exe)
+- [Windows 免安装包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/PyCursor-Windows-x64.zip)
+- [源码与作业材料包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/PyCursor-Portable-1.6.0.zip)
+- [SHA256 校验清单](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/SHA256SUMS.txt)
 
 ## 换一台电脑后，三步启动
 
 1. 用 `scripts\build_windows.ps1` 和 `scripts\build_sfx_setup.ps1` 构建后，双击
-   `PyCursor-Setup-1.5.0.exe`，安装完成后打开 CodeProof。
+   `PyCursor-Setup-1.6.0.exe`，安装完成后打开 CodeProof。
 2. 点击右上角“设置”，填写 DeepSeek API Key，Base URL 保持
    `https://api.deepseek.com/v1`，模型填写 `deepseek-chat` 或账户支持的
    `deepseek-v4-flash`。
@@ -39,6 +39,23 @@
 
 ![工具调用 Trace](docs/screenshots/03-tool-trace.png)
 
+## 微信 H5
+
+桌面版内置响应式 H5 入口。手机与电脑在同一 Wi-Fi 时，点击桌面窗口右上角“手机 H5”，
+把弹窗里的局域网地址复制到微信文件传输助手，再输入该窗口生成的一次性访问令牌即可。
+
+也可以在源码目录启动：
+
+```powershell
+Copy-Item .env.example .env
+# 在 .env 填写 PYCURSOR_API_KEY
+.\scripts\start_web.ps1 -Lan
+```
+
+终端会打印局域网地址和访问令牌。桌面按钮与源码脚本都复用同一个后端；非本机监听
+必须设置访问令牌，否则服务会拒绝启动，避免工作区的 read/write/edit/bash 被未授权
+访问。公网分享和故障排查见 [docs/wechat-h5.md](docs/wechat-h5.md)。
+
 ## 演示视频
 
 [播放实时操作演示](demo.mp4)
@@ -48,7 +65,7 @@
 
 ## 功能
 
-- 真桌面窗口，不依赖浏览器或 localhost 页面。
+- 桌面窗口和移动 H5 共用同一后端；H5 可在微信内置浏览器中运行。
 - 默认接入 DeepSeek 官方 API，使用 `deepseek-chat` 和标准 function calling。
 - 只有四个内置工具：`read`、`write`、`edit`、`bash`。
 - 每次工具调用的参数、结果、错误和 diff 都进入可见 trace。
@@ -62,7 +79,7 @@
 
 ## 直接安装（推荐）
 
-双击 `dist\PyCursor-Setup-1.5.0.exe`。安装器会安装到当前用户目录、创建快捷方式并
+双击 `dist\PyCursor-Setup-1.6.0.exe`。安装器会安装到当前用户目录、创建快捷方式并
 启动窗口。默认模型为 DeepSeek `deepseek-chat`，进入右上角“设置”填写
 DeepSeek API Key 后即可使用。
 
@@ -281,7 +298,7 @@ python scripts\check.py
 .\scripts\build_sfx_setup.ps1
 ```
 
-该脚本使用 WinRAR 自解压模块生成 `dist\PyCursor-Setup-1.5.0.exe`，安装到当前用户的
+该脚本使用 WinRAR 自解压模块生成 `dist\PyCursor-Setup-1.6.0.exe`，安装到当前用户的
 `%LOCALAPPDATA%\Programs\PyCursor` 并创建桌面与开始菜单快捷方式。构建机需要 WinRAR；
 安装后的用户不需要 WinRAR、Python 或其他运行时。`scripts\installer.iss` 保留为
 Inno Setup 6 的可选替代方案。

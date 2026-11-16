@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08111f">
+  <meta name="description" content="CodeProof 本地编码智能体的微信 H5 入口">
+  <title>CodeProof · 本地编码智能体</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body data-mobile-view="chat">
+  <a class="skip-link" href="#promptInput">跳到任务输入</a>
+
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="brand-mark" aria-hidden="true">C</div>
+      <div>
+        <p class="eyebrow">CODEPROOF / H5</p>
+        <h1>本地编码智能体</h1>
+        <p class="tagline">模型负责猜，码证负责查。每一步，都有证据。</p>
+      </div>
+    </div>
+    <div class="status-row" aria-label="运行状态">
+      <span class="status-chip status-neutral" id="connectionChip">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="connectionStatus">连接中</span>
+      </span>
+      <span class="status-chip status-neutral" id="modelChip">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="modelStatus">DeepSeek</span>
+      </span>
+      <span class="status-chip status-neutral" id="mcpChip">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="mcpStatus">MCP 检查中</span>
+      </span>
+      <button class="ghost-button" id="authButton" type="button" hidden>访问令牌</button>
+    </div>
+  </header>
+
+  <main class="app-grid">
+    <aside class="panel file-panel" aria-label="工作区文件">
+      <div class="panel-heading">
+        <div>
+          <p class="section-kicker">WORKSPACE</p>
+          <h2>工作区</h2>
+        </div>
+        <button class="icon-button" id="refreshFiles" type="button" aria-label="刷新工作区文件">↻</button>
+      </div>
+      <p class="workspace-path" id="workspacePath">正在读取…</p>
+      <p class="file-summary" id="fileSummary">-</p>
+      <ul class="file-list" id="fileList">
+        <li class="file-placeholder">正在加载文件…</li>
+      </ul>
+    </aside>
+
+    <section class="panel conversation-panel" aria-label="智能体对话">
+      <div class="panel-heading conversation-heading">
+        <div>
+          <p class="section-kicker">CONVERSATION</p>
+          <h2>任务对话</h2>
+        </div>
+        <button class="ghost-button" id="newChat" type="button">新对话</button>
+      </div>
+
+      <div class="messages" id="messages" aria-live="polite">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-orbit" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p class="empty-kicker">READY FOR EVIDENCE</p>
+          <h2>让模型动手，也把过程留下。</h2>
+          <p>CodeProof 会在设定工作区里调用 read、write、edit、bash，实时展示工具活动、测试结果和代码 diff。</p>
+          <div class="suggestions" aria-label="示例任务">
+            <button type="button" class="suggestion" data-prompt="运行全部测试，定位失败原因并修复，只修改必要位置。">定位并修复测试失败</button>
+            <button type="button" class="suggestion" data-prompt="读取 README.md，概括项目结构并指出最值得改进的三个地方。">阅读并评审项目</button>
+            <button type="button" class="suggestion" data-prompt="调用 get_system_info，并说明这是通过 MCP 获取的独立进程信息。">验证 MCP 调用</button>
+          </div>
+        </div>
+      </div>
+
+      <form class="composer" id="taskForm">
+        <label class="sr-only" for="promptInput">输入任务</label>
+        <textarea id="promptInput" rows="3" maxlength="12000" placeholder="告诉 CodeProof 要读、改或运行什么…" required></textarea>
+        <div class="composer-footer">
+          <span class="composer-hint">Ctrl + Enter 发送 · 只在当前工作区执行</span>
+          <div class="composer-actions">
+            <button class="danger-button" id="stopTask" type="button" hidden>停止</button>
+            <button class="primary-button" id="sendTask" type="submit">
+              <span>发送任务</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <aside class="panel trace-panel" aria-label="执行轨迹">
+      <div class="panel-heading">
+        <div>
+          <p class="section-kicker">EVIDENCE TRACE</p>
+          <h2>执行轨迹</h2>
+        </div>
+        <button class="icon-button" id="clearTrace" type="button" aria-label="清空执行轨迹">×</button>
+      </div>
+      <div class="trace-list" id="traceList" aria-live="polite">
+        <div class="trace-placeholder">
+          <strong>还没有轨迹</strong>
+          <span>发送任务后，这里会出现模型决策、工具参数、返回结果和 diff。</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <nav class="mobile-tabs" aria-label="移动端面板切换">
+    <button type="button" data-view="files">文件</button>
+    <button class="active" type="button" data-view="chat">对话</button>
+    <button type="button" data-view="trace">轨迹</button>
+  </nav>
+
+  <div class="auth-dialog" id="authDialog" hidden>
+    <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <p class="section-kicker">PRIVATE WORKSPACE</p>
+      <h2 id="authTitle">输入访问令牌</h2>
+      <p>这个 H5 入口连接的是真实电脑工作区。请输入启动服务时显示的 <code>PYCURSOR_WEB_TOKEN</code>。</p>
+      <form id="authForm">
+        <label for="tokenInput">访问令牌</label>
+        <input id="tokenInput" type="password" autocomplete="current-password" minlength="12" required>
+        <p class="auth-error" id="authError" role="alert"></p>
+        <button class="primary-button" id="loginButton" type="submit">进入 CodeProof</button>
+      </form>
+      <p class="auth-note">令牌只用于建立当前浏览器的 HttpOnly 会话 Cookie，不会写入页面存储。</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <noscript>CodeProof H5 需要启用 JavaScript。</noscript>
+</body>
+</html>

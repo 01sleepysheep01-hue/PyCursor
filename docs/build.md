@@ -35,7 +35,7 @@ dist\PyCursor-Windows-x64.zip
 产物：
 
 ```text
-dist\PyCursor-Setup-1.5.0.exe
+dist\PyCursor-Setup-1.6.0.exe
 ```
 
 脚本会把目录构建封装成自解压安装器。安装到
@@ -54,7 +54,7 @@ dist\PyCursor-Setup-1.5.0.exe
 
 1. 创建 public 仓库并提交源码。
 2. 确保 `.env`、`.pycursor`、构建环境和缓存没有入库。
-3. 创建 `v1.5.0` tag。
+3. 创建 `v1.6.0` tag。
 4. 发布 Release，并附加安装程序与 Windows 目录包。
 5. 在 README 的“三步启动”中替换为当前 Release 链接。
 

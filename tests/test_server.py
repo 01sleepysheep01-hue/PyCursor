@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import shutil
 import unittest
+import urllib.error
 import urllib.request
 import uuid
 from pathlib import Path
@@ -84,6 +85,77 @@ class ServerTest(unittest.TestCase):
             self.assertEqual(events[0].type, "task.queued")
             self.assertEqual(task.status, "completed")
             self.assertTrue(task.bus.closed)
+        finally:
+            shutil.rmtree(workspace, ignore_errors=True)
+
+    def test_web_shell_is_served_and_api_requires_token(self) -> None:
+        workspace = self.test_root / f"case-{uuid.uuid4().hex}"
+        workspace.mkdir()
+        try:
+            settings = Settings(
+                api_key="test",
+                workspace=str(workspace),
+                auto_start_mcp=False,
+            )
+            server, app = start_server(
+                settings,
+                port=0,
+                start_mcp=False,
+                sessions=SessionStore(workspace / ".sessions"),
+                web_token="test-web-token-123",
+            )
+            try:
+                host, port = server.server_address
+                base = f"http://{host}:{port}"
+                with urllib.request.urlopen(base + "/") as response:
+                    self.assertIn("CodeProof", response.read().decode("utf-8"))
+                    self.assertEqual(response.headers.get_content_type(), "text/html")
+
+                with self.assertRaises(urllib.error.HTTPError) as denied:
+                    urllib.request.urlopen(base + "/api/health")
+                self.assertEqual(denied.exception.code, 401)
+
+                login = urllib.request.Request(
+                    base + "/api/web/login",
+                    data=json.dumps({"token": "test-web-token-123"}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(login) as response:
+                    cookie = response.headers["Set-Cookie"].split(";", 1)[0]
+
+                health_request = urllib.request.Request(
+                    base + "/api/health",
+                    headers={"Cookie": cookie},
+                )
+                with urllib.request.urlopen(health_request) as response:
+                    health = json.loads(response.read())
+                self.assertTrue(health["auth_required"])
+                self.assertTrue(health["web"])
+            finally:
+                server.shutdown()
+                server.server_close()
+                app.mcp.stop_all()
+        finally:
+            shutil.rmtree(workspace, ignore_errors=True)
+
+    def test_non_loopback_bind_requires_web_token(self) -> None:
+        workspace = self.test_root / f"case-{uuid.uuid4().hex}"
+        workspace.mkdir()
+        try:
+            settings = Settings(
+                api_key="test",
+                workspace=str(workspace),
+                auto_start_mcp=False,
+            )
+            with self.assertRaisesRegex(ValueError, "PYCURSOR_WEB_TOKEN"):
+                start_server(
+                    settings,
+                    host="0.0.0.0",
+                    port=0,
+                    start_mcp=False,
+                    web_token="",
+                )
         finally:
             shutil.rmtree(workspace, ignore_errors=True)
 

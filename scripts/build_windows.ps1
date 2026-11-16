@@ -1,15 +1,16 @@
 param(
     [string]$PythonCommand = "python",
-    [string]$Version = "1.5.0",
-    [string]$Wheelhouse = ""
+    [string]$Version = "1.6.0",
+    [string]$Wheelhouse = "",
+    [string]$BuildDirectory = ".build-venv"
 )
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$BuildPython = Join-Path $ProjectRoot ".build-venv\Scripts\python.exe"
+$BuildPython = Join-Path $ProjectRoot "$BuildDirectory\Scripts\python.exe"
 
 if (-not (Test-Path -LiteralPath $BuildPython)) {
-    & $PythonCommand -m venv (Join-Path $ProjectRoot ".build-venv")
+    & $PythonCommand -m venv (Join-Path $ProjectRoot $BuildDirectory)
     if ($LASTEXITCODE -ne 0) {
         throw "Virtual environment creation failed with exit code $LASTEXITCODE"
     }
@@ -40,6 +41,7 @@ try {
         --add-data "examples;examples" `
         --add-data "skills;examples/workspace/skills" `
         --add-data "AGENTS.md;examples/workspace" `
+        --add-data "web;web" `
         --add-data "mcp.json;." `
         --hidden-import tkinter `
         run_pycursor.py
