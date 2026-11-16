@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from pycursor.review_findings import ReviewFinding
+from codeproof.review_findings import ReviewFinding
 
 
 class ReviewFindingTest(unittest.TestCase):

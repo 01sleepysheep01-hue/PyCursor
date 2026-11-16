@@ -1,8 +1,8 @@
 # 项目地图
 
-- `pycursor/`：后端、工具、模型客户端、桌面界面和技能系统。
-- `pycursor/hooks.py`：工具前后的硬约束与测试摘要回注。
-- `pycursor/reviewer.py`：独立上下文的只读 diff reviewer。
+- `codeproof/`：后端、工具、模型客户端、桌面界面和技能系统。
+- `codeproof/hooks.py`：工具前后的硬约束与测试摘要回注。
+- `codeproof/reviewer.py`：独立上下文的只读 diff reviewer。
 - `app/inspect.py`：独立生成作业报告，不依赖 UI。
 - `app/readiness.py`：按九根柱子和五个等级生成仓库体检报告。
 - `app/parallel.py`：创建两个 Git worktree，并行执行、测试并合并任务分支。
@@ -16,9 +16,9 @@
 - 必需检查：`python scripts/check.py`
 - 仓库体检：`python -m app.readiness --out readiness_report.json`
 - 并行演示：`python -m app.parallel --out parallel_report.json`
-- 评审评测：`python -m pycursor review --out review_report.json`
+- 评审评测：`python -m codeproof review --out review_report.json`
 - 技能报告：`python -m app.inspect skills --out skill_report.json`
-- 启动桌面版：`python -m pycursor`
+- 启动桌面版：`python -m codeproof`
 
 # 代码风格
 

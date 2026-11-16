@@ -1,4 +1,4 @@
-"""Small statistics helpers used by the PyCursor demo task."""
+"""Small statistics helpers used by the CodeProof demo task."""
 
 
 def mean(nums: list[float]) -> float:

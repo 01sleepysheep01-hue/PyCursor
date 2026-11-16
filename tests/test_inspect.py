@@ -11,8 +11,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from app.inspect import main
-from pycursor.skill_report import build_skill_report, select_skill
-from pycursor.skills import load_skills
+from codeproof.skill_report import build_skill_report, select_skill
+from codeproof.skills import load_skills
 
 
 class SkillReportTest(unittest.TestCase):

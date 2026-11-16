@@ -1,33 +1,35 @@
 $ErrorActionPreference = "Stop"
-$Source = Join-Path $PSScriptRoot "PyCursor"
-$InstallRoot = if ($env:PYCURSOR_INSTALL_ROOT) {
-    $env:PYCURSOR_INSTALL_ROOT
+$Source = Join-Path $PSScriptRoot "CodeProof"
+$InstallRoot = if ($env:CODEPROOF_INSTALL_ROOT) {
+    $env:CODEPROOF_INSTALL_ROOT
 }
 else {
-    Join-Path $env:LOCALAPPDATA "Programs\PyCursor"
+    Join-Path $env:LOCALAPPDATA "Programs\CodeProof"
 }
-$Executable = Join-Path $InstallRoot "PyCursor.exe"
+$Executable = Join-Path $InstallRoot "CodeProof.exe"
 
-if (-not (Test-Path -LiteralPath (Join-Path $Source "PyCursor.exe"))) {
-    throw "Install payload is incomplete: PyCursor.exe not found."
+if (-not (Test-Path -LiteralPath (Join-Path $Source "CodeProof.exe"))) {
+    throw "Install payload is incomplete: CodeProof.exe not found."
 }
 
 New-Item -ItemType Directory -Force -Path $InstallRoot | Out-Null
 Copy-Item -Path (Join-Path $Source "*") -Destination $InstallRoot -Recurse -Force
 
-if ($env:PYCURSOR_SKIP_SHORTCUTS -ne "1") {
+if ($env:CODEPROOF_SKIP_SHORTCUTS -ne "1") {
     $Shell = New-Object -ComObject WScript.Shell
     $Desktop = [Environment]::GetFolderPath("Desktop")
     $Programs = [Environment]::GetFolderPath("Programs")
     foreach ($Folder in @($Desktop, $Programs)) {
-        $ShortcutPath = Join-Path $Folder "PyCursor.lnk"
+        $ShortcutPath = Join-Path $Folder "CodeProof.lnk"
         $Shortcut = $Shell.CreateShortcut($ShortcutPath)
         $Shortcut.TargetPath = $Executable
         $Shortcut.WorkingDirectory = $InstallRoot
-        $Shortcut.Description = "PyCursor desktop coding agent"
+        $Shortcut.Description = "CodeProof desktop coding agent"
         $Shortcut.Save()
     }
 }
 
-Start-Process -FilePath $Executable -WorkingDirectory $InstallRoot
+if ($env:CODEPROOF_SKIP_AUTOSTART -ne "1") {
+    Start-Process -FilePath $Executable -WorkingDirectory $InstallRoot
+}
 

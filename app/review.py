@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from pycursor.review_findings import ReviewFinding
+from codeproof.review_findings import ReviewFinding
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

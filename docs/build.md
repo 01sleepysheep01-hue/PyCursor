@@ -17,11 +17,11 @@ python scripts\replay_demo.py
 产物：
 
 ```text
-dist\PyCursor\PyCursor.exe
-dist\PyCursor-Windows-x64.zip
+dist\CodeProof\CodeProof.exe
+dist\CodeProof-Windows-x64.zip
 ```
 
-解压 `PyCursor-Windows-x64.zip` 后双击 `PyCursor.exe`，确认窗口能打开，并能选择
+解压 `CodeProof-Windows-x64.zip` 后双击 `CodeProof.exe`，确认窗口能打开，并能选择
 工作区、保存设置、调用四个工具。
 
 ## 3. 生成安装程序
@@ -35,11 +35,11 @@ dist\PyCursor-Windows-x64.zip
 产物：
 
 ```text
-dist\PyCursor-Setup-1.6.0.exe
+dist\CodeProof-Setup-1.7.0.exe
 ```
 
 脚本会把目录构建封装成自解压安装器。安装到
-`%LOCALAPPDATA%\Programs\PyCursor`，创建桌面与开始菜单快捷方式，并立即启动。
+`%LOCALAPPDATA%\Programs\CodeProof`，创建桌面与开始菜单快捷方式，并立即启动。
 安装后的用户不需要 Python 或 WinRAR。
 
 如构建机没有 WinRAR，也可安装 Inno Setup 6 并执行：
@@ -53,8 +53,8 @@ dist\PyCursor-Setup-1.6.0.exe
 ## 4. GitHub Release
 
 1. 创建 public 仓库并提交源码。
-2. 确保 `.env`、`.pycursor`、构建环境和缓存没有入库。
-3. 创建 `v1.6.0` tag。
+2. 确保 `.env`、`.codeproof`、构建环境和缓存没有入库。
+3. 创建 `v1.7.0` tag。
 4. 发布 Release，并附加安装程序与 Windows 目录包。
 5. 在 README 的“三步启动”中替换为当前 Release 链接。
 

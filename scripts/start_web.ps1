@@ -15,7 +15,7 @@ else {
 $HostAddress = if ($Lan) { "0.0.0.0" } else { "127.0.0.1" }
 $GeneratedToken = $null
 
-if ($Lan -and -not $env:PYCURSOR_WEB_TOKEN) {
+if ($Lan -and -not $env:CODEPROOF_WEB_TOKEN) {
     $bytes = New-Object byte[] 24
     $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
     try {
@@ -25,7 +25,7 @@ if ($Lan -and -not $env:PYCURSOR_WEB_TOKEN) {
         $rng.Dispose()
     }
     $GeneratedToken = [Convert]::ToBase64String($bytes).TrimEnd("=").Replace("+", "-").Replace("/", "_")
-    $env:PYCURSOR_WEB_TOKEN = $GeneratedToken
+    $env:CODEPROOF_WEB_TOKEN = $GeneratedToken
 }
 
 Write-Host "CodeProof H5 (本机): http://127.0.0.1:$Port/"
@@ -44,7 +44,7 @@ if ($Lan) {
         Write-Host "本次访问令牌: $GeneratedToken"
     }
     else {
-        Write-Host "访问令牌: 使用已设置的 PYCURSOR_WEB_TOKEN"
+        Write-Host "访问令牌: 使用已设置的 CODEPROOF_WEB_TOKEN"
     }
 }
 Write-Host "工作区: $Workspace"
@@ -52,7 +52,7 @@ Write-Host "按 Ctrl+C 停止服务。"
 
 Push-Location $ProjectRoot
 try {
-    & $PythonCommand -m pycursor.server --host $HostAddress --port $Port --workspace $Workspace
+    & $PythonCommand -m codeproof.server --host $HostAddress --port $Port --workspace $Workspace
     if ($LASTEXITCODE -ne 0) {
         throw "CodeProof H5 server exited with code $LASTEXITCODE"
     }

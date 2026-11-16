@@ -10,9 +10,9 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-from pycursor.agent import AgentRunner
-from pycursor.config import Settings
-from pycursor.llm import ChatReply
+from codeproof.agent import AgentRunner
+from codeproof.config import Settings
+from codeproof.llm import ChatReply
 
 
 class ScriptedClient:

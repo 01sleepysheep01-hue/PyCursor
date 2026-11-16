@@ -4,8 +4,8 @@
 security、performance、quality 四类规则，并生成结构化结果和一条汇总评论。
 
 ```powershell
-python -m pycursor review --dataset review_dataset --out review_report.json --comment-out review_comment.md
-python -m pycursor review --diff-file change.diff --out single_review.json
+python -m codeproof review --dataset review_dataset --out review_report.json --comment-out review_comment.md
+python -m codeproof review --diff-file change.diff --out single_review.json
 ```
 
 固定档位：

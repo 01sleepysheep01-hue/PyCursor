@@ -7,7 +7,7 @@ import uuid
 from pathlib import Path
 from unittest.mock import patch
 
-from pycursor.skills import (
+from codeproof.skills import (
     SkillDisabledError,
     SkillError,
     estimate_tokens,

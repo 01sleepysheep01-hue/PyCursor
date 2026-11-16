@@ -9,11 +9,11 @@ import uuid
 from pathlib import Path
 from unittest.mock import patch
 
-from pycursor.agent import AgentResult
-from pycursor.config import Settings
-from pycursor.mcp import MCPManager
-from pycursor.server import TaskManager, start_server
-from pycursor.sessions import SessionStore
+from codeproof.agent import AgentResult
+from codeproof.config import Settings
+from codeproof.mcp import MCPManager
+from codeproof.server import TaskManager, start_server
+from codeproof.sessions import SessionStore
 
 
 class ServerTest(unittest.TestCase):
@@ -73,7 +73,7 @@ class ServerTest(unittest.TestCase):
             sessions = SessionStore(workspace / ".sessions")
             mcp = MCPManager(self.test_root / "missing-mcp.json")
             manager = TaskManager(settings, mcp=mcp, sessions=sessions)
-            with patch("pycursor.server.AgentRunner") as runner_type:
+            with patch("codeproof.server.AgentRunner") as runner_type:
                 runner_type.return_value.run.return_value = AgentResult(
                     content="done",
                     trace=["[step 1] model"],
@@ -148,7 +148,7 @@ class ServerTest(unittest.TestCase):
                 workspace=str(workspace),
                 auto_start_mcp=False,
             )
-            with self.assertRaisesRegex(ValueError, "PYCURSOR_WEB_TOKEN"):
+            with self.assertRaisesRegex(ValueError, "CODEPROOF_WEB_TOKEN"):
                 start_server(
                     settings,
                     host="0.0.0.0",

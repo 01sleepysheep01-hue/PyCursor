@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from pycursor import __version__
+from codeproof import __version__
 
 
 @dataclass(frozen=True, slots=True)
@@ -146,8 +146,8 @@ def _build_checks(
     agents = _read(root, "AGENTS.md")
     readme = _read(root, "README.md")
     pyproject = _read(root, "pyproject.toml")
-    tools_source = _read(root, "pycursor/tools.py").lower()
-    server_source = _read(root, "pycursor/server.py").lower()
+    tools_source = _read(root, "codeproof/tools.py").lower()
+    server_source = _read(root, "codeproof/server.py").lower()
 
     return [
         _check(
@@ -194,7 +194,7 @@ def _build_checks(
             "build",
             "entry_points",
             "提供桌面端与后端命令入口",
-            "pycursor =" in pyproject and "pycursor-server =" in pyproject,
+            "codeproof =" in pyproject and "codeproof-server =" in pyproject,
             "pyproject.toml",
             level="L3",
         ),
@@ -276,8 +276,8 @@ def _build_checks(
             "observability",
             "event_bus",
             "工具与任务事件进入统一事件总线",
-            (root / "pycursor/events.py").is_file(),
-            "pycursor/events.py",
+            (root / "codeproof/events.py").is_file(),
+            "codeproof/events.py",
             level="L2",
         ),
         _check(
@@ -293,14 +293,14 @@ def _build_checks(
             "bounded_output",
             "命令输出有截断和超时记录",
             "max_output_chars" in tools_source and "timeout" in tools_source,
-            "pycursor/tools.py",
+            "codeproof/tools.py",
             level="L3",
         ),
         _check(
             "security",
             "env_ignored",
             ".env 与本地配置被 Git 忽略",
-            ".env" in ignore and ".pycursor/" in ignore,
+            ".env" in ignore and ".codeproof/" in ignore,
             ".gitignore",
             level="L3",
             weight=2,
@@ -344,7 +344,7 @@ def _build_checks(
             "background_recovery",
             "后台任务具备恢复状态",
             "resume" in server_source,
-            "pycursor/server.py",
+            "codeproof/server.py",
             level="L4",
         ),
         _check(
@@ -476,7 +476,7 @@ def build_readiness_report(
         timeout_seconds,
     )
     import_command = runner(
-        [sys.executable, "-c", "import app, pycursor"],
+        [sys.executable, "-c", "import app, codeproof"],
         project_root,
         min(timeout_seconds, 60),
     )
@@ -494,7 +494,7 @@ def build_readiness_report(
 
     return {
         "schema_version": 1,
-        "project": "CodeProof (PyCursor)",
+        "project": "CodeProof",
         "version": __version__,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "level": current_level,

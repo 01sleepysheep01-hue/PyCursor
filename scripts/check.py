@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE_ROOTS = ("app", "pycursor", "scripts", "tests", "mcp_servers", "web")
+SOURCE_ROOTS = ("app", "codeproof", "scripts", "tests", "mcp_servers", "web")
 EXCLUDED_DIRS = {
     ".git",
     ".build-tmp",
@@ -42,7 +42,7 @@ TEXT_SUFFIXES = {
 SECRET_PATTERNS = (
     re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
     re.compile(
-        r"(?:DEEPSEEK_API_KEY|PYCURSOR_API_KEY)[ \t]*=[ \t]*"
+        r"(?:DEEPSEEK_API_KEY|CODEPROOF_API_KEY)[ \t]*=[ \t]*"
         r"(?!$|your|example|replace|<)[A-Za-z0-9_-]{16,}",
         re.IGNORECASE | re.MULTILINE,
     ),
@@ -127,7 +127,7 @@ def run_tests() -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run PyCursor's required local checks")
+    parser = argparse.ArgumentParser(description="Run CodeProof's required local checks")
     parser.add_argument(
         "--static-only",
         action="store_true",

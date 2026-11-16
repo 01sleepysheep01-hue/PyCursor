@@ -1,1 +1,1 @@
-"""Standalone inspection commands for PyCursor."""
+"""Standalone inspection commands for CodeProof."""

@@ -7,7 +7,7 @@ import unittest
 import uuid
 from pathlib import Path
 
-from pycursor.mcp import MCPManager
+from codeproof.mcp import MCPManager
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -41,7 +41,7 @@ class MCPTest(unittest.TestCase):
                 public_name = "mcp__demo__get_system_info"
                 self.assertIn(public_name, manager.tools)
                 observation = manager.call(public_name, {})
-                self.assertIn("PyCursor demo MCP", observation.text)
+                self.assertIn("CodeProof demo MCP", observation.text)
                 self.assertIn("python", observation.text)
             finally:
                 manager.stop_all()

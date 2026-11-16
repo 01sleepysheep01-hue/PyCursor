@@ -1,6 +1,6 @@
 # Demo workspace
 
-这是 PyCursor 的演示工作区。仓库根目录的 `stats.py` 故意把空列表的平均值设为 `0`，
+这是 CodeProof 的演示工作区。仓库根目录的 `stats.py` 故意把空列表的平均值设为 `0`，
 但测试要求抛出 `ValueError`。
 
 试运行：

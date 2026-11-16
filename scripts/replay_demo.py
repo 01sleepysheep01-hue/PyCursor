@@ -20,9 +20,9 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from pycursor.agent import AgentRunner  # noqa: E402
-from pycursor.config import Settings  # noqa: E402
-from pycursor.llm import ChatReply  # noqa: E402
+from codeproof.agent import AgentRunner  # noqa: E402
+from codeproof.config import Settings  # noqa: E402
+from codeproof.llm import ChatReply  # noqa: E402
 
 
 class ScriptedClient:
@@ -133,7 +133,7 @@ def main() -> int:
             return 1
 
         lines = [
-            "# PyCursor 真实工具 trace",
+            "# CodeProof 真实工具 trace",
             "",
             "由 `scripts/replay_demo.py` 生成。模型回复是脚本化的，但 read、edit、bash "
             "和测试输出均为真实执行结果。",

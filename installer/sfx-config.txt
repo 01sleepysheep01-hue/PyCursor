@@ -1,5 +1,5 @@
 ;!@Install@!UTF-8!
-Title=CodeProof 1.6.0
+Title=CodeProof 1.7.0
 Text=Install CodeProof for the current Windows user.
 Setup=<Hide>setup.cmd
 TempMode

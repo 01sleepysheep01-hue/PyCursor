@@ -1,4 +1,4 @@
-# CodeProof（PyCursor v1.6）大作业报告
+# CodeProof v1.7 大作业报告
 
 ## 1. 目标与结果
 
@@ -75,7 +75,7 @@ MCP 客户端在独立进程中启动 server，通过 JSON-RPC over stdio 完成
 和调用。stdout 只处理协议帧，stderr 转为日志。仓库自带一个独立 server 作为可复现
 示例，提供 `get_system_info` 和 `project_snapshot`。
 
-打包后，内置 server 通过同一个 PyCursor 可执行文件的 `--mcp-demo` 子模式运行；
+打包后，内置 server 通过同一个 CodeProof 可执行文件的 `--mcp-demo` 子模式运行；
 开发模式则直接使用当前 Python 解释器。外部 server 继续使用自己的 command、args
 和 env。
 
@@ -93,9 +93,9 @@ MCP 客户端在独立进程中启动 server，通过 JSON-RPC over stdio 完成
 ## 7. 打包与分发
 
 `scripts/build_windows.ps1` 使用 PyInstaller 生成带桌面入口的 Windows 目录构建，
-并压缩为 `PyCursor-Windows-x64.zip`；解压后双击 `PyCursor.exe` 即可运行，不需要
+并压缩为 `CodeProof-Windows-x64.zip`；解压后双击 `CodeProof.exe` 即可运行，不需要
 用户已安装 Python。`scripts/build_sfx_setup.ps1` 再把这个目录构建封装为
-`PyCursor-Setup-1.6.0.exe`，安装到当前用户目录并创建快捷方式。
+`CodeProof-Setup-1.7.0.exe`，安装到当前用户目录并创建快捷方式。
 `scripts/installer.iss` 保留为 Inno Setup 6 的替代路径。
 `scripts/package_portable.ps1` 可生成源码便携包。
 
@@ -162,7 +162,7 @@ Git worktree：一个补稳定的评审发现数据契约，另一个补评审�
 
 ### 10.3 F：评审自己
 
-`python -m pycursor review --dataset review_dataset --out review_report.json` 对 12 个
+`python -m codeproof review --dataset review_dataset --out review_report.json` 对 12 个
 固定 PR 样例运行 correctness、security、performance、quality 四类专科规则，并由
 汇总器给出 `approved`、`with_comments` 或 `request_changes` 判定。数据集包含 8 个
 已知 bug 和 4 个干净对照；最新报告逐条命中 8/8，召回率 100%，误报 0 条，达到
@@ -181,7 +181,7 @@ API Key；常规代码审查仍可使用已有的只读 reviewer 子 Agent 调�
 - 默认模型是 DeepSeek `deepseek-chat`。切换到其他兼容服务时，对方必须支持
   Chat Completions 的 function calling。
 - 演示也可以把模型改成服务商实际开放的 `deepseek-v4-flash`；若该变体不支持工具
-  调用，PyCursor 只能对话，不能执行 read/write/edit/bash。
+  调用，CodeProof 只能对话，不能执行 read/write/edit/bash。
 - 仓库公开、至少 15 次跨 7 天 commit、GitHub Release 属于账号和外部发布操作，
   需要提交者在自己的仓库中完成；本交付没有伪造提交历史。
 

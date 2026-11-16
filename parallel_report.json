@@ -18,7 +18,7 @@
       "branch": "parallel/findings-contract-20261115074123-96f0",
       "worktree": "findings-contract",
       "scope": [
-        "pycursor/review_findings.py",
+        "codeproof/review_findings.py",
         "tests/test_review_findings.py"
       ],
       "started_at": "2026-11-15T07:41:24.487860+00:00",
@@ -29,7 +29,7 @@
       "test_exit_code": 0,
       "tests_passed": true,
       "changed_files": [
-        "pycursor/review_findings.py",
+        "codeproof/review_findings.py",
         "tests/test_review_findings.py"
       ],
       "commit": "61dff7ce811384e7824ef46fd48df2937bfe9f90",
@@ -70,7 +70,7 @@
         "merged": true,
         "exit_code": 0,
         "conflict_files": [],
-        "output_tail": "Merge made by the 'ort' strategy.\n pycursor/review_findings.py   | 60 +++++++++++++++++++++++++++++++++++++++++++\n tests/test_review_findings.py | 53 ++++++++++++++++++++++++++++++++++++++\n 2 files changed, 113 insertions(+)\n create mode 100644 pycursor/review_findings.py\n create mode 100644 tests/test_review_findings.py\n"
+        "output_tail": "Merge made by the 'ort' strategy.\n codeproof/review_findings.py   | 60 +++++++++++++++++++++++++++++++++++++++++++\n tests/test_review_findings.py | 53 ++++++++++++++++++++++++++++++++++++++\n 2 files changed, 113 insertions(+)\n create mode 100644 codeproof/review_findings.py\n create mode 100644 tests/test_review_findings.py\n"
       },
       {
         "branch": "parallel/review-docs-20261115074123-96f0",

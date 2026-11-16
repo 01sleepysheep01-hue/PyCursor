@@ -259,7 +259,7 @@ class Application:
         return {"root": str(root), "entries": entries}
 
 
-class PyCursorHTTPServer(ThreadingHTTPServer):
+class CodeProofHTTPServer(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
@@ -269,7 +269,7 @@ class PyCursorHTTPServer(ThreadingHTTPServer):
 
 
 class APIHandler(BaseHTTPRequestHandler):
-    server: PyCursorHTTPServer
+    server: CodeProofHTTPServer
     protocol_version = "HTTP/1.1"
 
     def log_message(self, format: str, *args: Any) -> None:
@@ -501,14 +501,14 @@ def start_server(
     sessions: SessionStore | None = None,
     web_token: str | None = None,
     mcp: MCPManager | None = None,
-) -> tuple[PyCursorHTTPServer, Application]:
-    token = os.environ.get("PYCURSOR_WEB_TOKEN", "") if web_token is None else web_token
+) -> tuple[CodeProofHTTPServer, Application]:
+    token = os.environ.get("CODEPROOF_WEB_TOKEN", "") if web_token is None else web_token
     token = token.strip()
     if token and len(token) < 12:
-        raise ValueError("PYCURSOR_WEB_TOKEN 至少需要 12 个字符")
+        raise ValueError("CODEPROOF_WEB_TOKEN 至少需要 12 个字符")
     if not is_loopback_host(host) and not token:
         raise ValueError(
-            "监听局域网或公网地址时必须设置 PYCURSOR_WEB_TOKEN，"
+            "监听局域网或公网地址时必须设置 CODEPROOF_WEB_TOKEN，"
             "避免未授权用户执行工作区命令。"
         )
     app = Application(
@@ -518,10 +518,10 @@ def start_server(
         web_token=token,
         mcp=mcp,
     )
-    server = PyCursorHTTPServer((host, port), app)
+    server = CodeProofHTTPServer((host, port), app)
     thread = threading.Thread(
         target=server.serve_forever,
-        name="pycursor-http",
+        name="codeproof-http",
         daemon=True,
     )
     thread.start()
@@ -529,7 +529,7 @@ def start_server(
 
 
 def cli() -> None:
-    parser = argparse.ArgumentParser(description="PyCursor backend")
+    parser = argparse.ArgumentParser(description="CodeProof backend")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--workspace")

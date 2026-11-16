@@ -33,7 +33,7 @@ DEFAULT_TASKS = (
         title="添加稳定的评审发现数据契约",
         branch_label="findings-contract",
         worker_name="findings-contract",
-        scope=("pycursor/review_findings.py", "tests/test_review_findings.py"),
+        scope=("codeproof/review_findings.py", "tests/test_review_findings.py"),
     ),
     ParallelTask(
         id="review-docs",
@@ -286,7 +286,7 @@ def build_parallel_report(
         temp_root.mkdir(parents=True, exist_ok=True)
     else:
         temp_root = Path(
-            tempfile.mkdtemp(prefix=".pycursor-parallel-", dir=root.parent)
+            tempfile.mkdtemp(prefix=".codeproof-parallel-", dir=root.parent)
         )
     worktrees: list[Path] = []
     branches: list[str] = []

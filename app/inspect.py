@@ -4,13 +4,13 @@ import argparse
 import json
 from pathlib import Path
 
-from pycursor.custom_report import build_custom_report
-from pycursor.skill_report import build_skill_report
-from pycursor.skills import load_skills
+from codeproof.custom_report import build_custom_report
+from codeproof.skill_report import build_skill_report
+from codeproof.skills import load_skills
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Inspect PyCursor capabilities")
+    parser = argparse.ArgumentParser(description="Inspect CodeProof capabilities")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     skills = subparsers.add_parser("skills", help="Generate skill_report.json")

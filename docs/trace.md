@@ -1,4 +1,4 @@
-# PyCursor 真实工具 trace
+# CodeProof 真实工具 trace
 
 由 `scripts/replay_demo.py` 生成。模型回复是脚本化的，但 read、edit、bash 和测试输出均为真实执行结果。
 
@@ -29,7 +29,7 @@ test_median_rejects_empty_input (test_stats.StatsTests.test_median_rejects_empty
 FAIL: test_mean_rejects_empty_input (test_stats.StatsTests.test_mean_rejects_empty_input)
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File "C:\Users\hp\Documents\Codex\2026-10-27\di\outputs\PyCursor-Submission\.demo-run\replay-98071daf\test_stats.py", line 11, in test_mean_rejects_empty_input
+  File "C:\Users\hp\Documents\Codex\2026-10-27\di\outputs\CodeProof-Submission\.demo-run\replay-98071daf\test_stats.py", line 11, in test_mean_rejects_empty_input
     with self.assertRaises(ValueError):
          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 AssertionError: ValueError not raised
@@ -52,7 +52,7 @@ FAILED (failures=1)
 ## 14:15:53 · read · 完成
 
 ```text
-     1 | """Small statistics helpers used by the PyCursor demo task."""
+     1 | """Small statistics helpers used by the CodeProof demo task."""
      2 | 
      3 | 
      4 | def mean(nums: list[float]) -> float:

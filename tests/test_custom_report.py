@@ -11,7 +11,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from app.inspect import main
-from pycursor.custom_report import build_custom_report
+from codeproof.custom_report import build_custom_report
 
 
 ENABLED = {

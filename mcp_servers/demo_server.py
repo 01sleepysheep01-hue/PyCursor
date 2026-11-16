@@ -1,4 +1,4 @@
-"""Minimal MCP stdio server used by PyCursor's end-to-end demo.
+"""Minimal MCP stdio server used by CodeProof's end-to-end demo.
 
 stdout is reserved for JSON-RPC. Diagnostics must go to stderr.
 """
@@ -55,7 +55,7 @@ def call_tool(name: str, arguments: dict) -> dict:
         return result_text(
             json.dumps(
                 {
-                    "server": "PyCursor demo MCP",
+                    "server": "CodeProof demo MCP",
                     "python": platform.python_version(),
                     "platform": platform.platform(),
                     "cwd": str(Path.cwd()),
@@ -97,7 +97,7 @@ def respond(message: dict) -> dict | None:
             "result": {
                 "protocolVersion": "2025-03-26",
                 "capabilities": {"tools": {"listChanged": False}},
-                "serverInfo": {"name": "pycursor-demo", "version": "1.0.0"},
+                "serverInfo": {"name": "codeproof-demo", "version": "1.0.0"},
             },
         }
     if method == "tools/list":
@@ -126,7 +126,7 @@ def respond(message: dict) -> dict | None:
 
 
 def main() -> None:
-    print("pycursor-demo MCP server ready", file=sys.stderr, flush=True)
+    print("codeproof-demo MCP server ready", file=sys.stderr, flush=True)
     for line in sys.stdin:
         try:
             message = json.loads(line)

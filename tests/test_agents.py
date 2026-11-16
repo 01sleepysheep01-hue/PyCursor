@@ -7,7 +7,7 @@ import uuid
 from pathlib import Path
 from unittest.mock import patch
 
-from pycursor.agents import (
+from codeproof.agents import (
     AgentInstructionError,
     agents_enabled,
     load_agent_instructions,

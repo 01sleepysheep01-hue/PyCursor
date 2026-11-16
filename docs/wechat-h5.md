@@ -11,7 +11,7 @@ H5 与原生微信小程序的区别：H5 通过微信内置浏览器打开，�
 1. 打开 CodeProof 桌面窗口，在右上角点击“手机 H5”。
 2. 手机与电脑连接同一个 Wi-Fi。把弹窗里的局域网地址发到微信文件传输助手。
 3. 在手机微信中打开链接，输入弹窗里的访问令牌。
-4. Windows 防火墙第一次询问时，只允许 PyCursor/Python 在“专用网络”通信。
+4. Windows 防火墙第一次询问时，只允许 CodeProof/Python 在“专用网络”通信。
 5. 演示结束点击“停止 H5”，访问令牌会立即失效。
 
 如果电脑没有安装版，再使用下面的源码启动方式。
@@ -24,8 +24,8 @@ H5 与原生微信小程序的区别：H5 通过微信内置浏览器打开，�
    Copy-Item .env.example .env
    ```
 
-   至少填写 `PYCURSOR_API_KEY`。如果服务商的模型名不同，同时修改
-   `PYCURSOR_MODEL`。
+   至少填写 `CODEPROOF_API_KEY`。如果服务商的模型名不同，同时修改
+   `CODEPROOF_MODEL`。
 
 2. 启动 H5 和局域网监听：
 
@@ -66,7 +66,7 @@ H5 与原生微信小程序的区别：H5 通过微信内置浏览器打开，�
 必须同时设置长随机令牌：
 
 ```powershell
-$env:PYCURSOR_WEB_TOKEN = "请替换为至少12位的随机令牌"
+$env:CODEPROOF_WEB_TOKEN = "请替换为至少12位的随机令牌"
 .\scripts\start_web.ps1
 ```
 

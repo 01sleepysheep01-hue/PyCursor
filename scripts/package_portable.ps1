@@ -1,12 +1,12 @@
 param(
-    [string]$Version = "1.6.0"
+    [string]$Version = "1.7.0"
 )
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $OutputRoot = Join-Path $ProjectRoot "dist"
-$StageRoot = Join-Path $OutputRoot "PyCursor-Portable"
-$ZipPath = Join-Path $OutputRoot "PyCursor-Portable-$Version.zip"
+$StageRoot = Join-Path $OutputRoot "CodeProof-Portable"
+$ZipPath = Join-Path $OutputRoot "CodeProof-Portable-$Version.zip"
 
 if (-not $OutputRoot.StartsWith($ProjectRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
     throw "Output path escaped the project root."
@@ -20,7 +20,7 @@ if (Test-Path -LiteralPath $ZipPath) {
 }
 
 New-Item -ItemType Directory -Force -Path $StageRoot | Out-Null
-foreach ($Name in @("app", "pycursor", "web", "skills", "review_dataset", "mcp_servers", "examples", "scripts", "installer", "tests", "docs", "AGENTS.md", "README.md", "report.md", "SUBMISSION.md", "skill_report.json", "custom_report.json", "readiness_report.json", "parallel_report.json", "review_report.json", "review_comment.md", "RELEASE_NOTES_v1.0.0.md", "RELEASE_NOTES_v1.2.0.md", "RELEASE_NOTES_v1.5.0.md", "RELEASE_NOTES_v1.6.0.md", "demo.mp4", "LICENSE", "pyproject.toml", "mcp.json", ".env.example", "PyCursor.cmd", "run_pycursor.py")) {
+foreach ($Name in @("app", "codeproof", "web", "skills", "review_dataset", "mcp_servers", "examples", "scripts", "installer", "tests", "docs", "AGENTS.md", "README.md", "report.md", "SUBMISSION.md", "skill_report.json", "custom_report.json", "readiness_report.json", "parallel_report.json", "review_report.json", "review_comment.md", "RELEASE_NOTES_v1.6.0.md", "RELEASE_NOTES_v1.7.0.md", "demo.mp4", "LICENSE", "pyproject.toml", "mcp.json", ".env.example", "CodeProof.cmd", "run_codeproof.py")) {
     Copy-Item -LiteralPath (Join-Path $ProjectRoot $Name) -Destination $StageRoot -Recurse
 }
 

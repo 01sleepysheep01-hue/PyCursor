@@ -8,8 +8,8 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from pycursor.llm import ChatReply
-from pycursor.reviewer import ReviewerAgent
+from codeproof.llm import ChatReply
+from codeproof.reviewer import ReviewerAgent
 
 
 class ScriptedReviewerClient:

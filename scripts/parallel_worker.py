@@ -71,7 +71,7 @@ FINDINGS_TEST = '''from __future__ import annotations
 
 import unittest
 
-from pycursor.review_findings import ReviewFinding
+from codeproof.review_findings import ReviewFinding
 
 
 class ReviewFindingTest(unittest.TestCase):
@@ -144,7 +144,7 @@ DATASET_README = '''# Review 数据集
 
 
 def write_findings_contract(workspace: Path) -> None:
-    module = workspace / "pycursor" / "review_findings.py"
+    module = workspace / "codeproof" / "review_findings.py"
     test = workspace / "tests" / "test_review_findings.py"
     module.parent.mkdir(parents=True, exist_ok=True)
     test.parent.mkdir(parents=True, exist_ok=True)

@@ -32,7 +32,7 @@ class ParallelTaskTest(unittest.TestCase):
     def test_findings_contract_worker_writes_expected_files(self) -> None:
         apply_task(self.workspace, "findings-contract")
 
-        self.assertTrue((self.workspace / "pycursor/review_findings.py").is_file())
+        self.assertTrue((self.workspace / "codeproof/review_findings.py").is_file())
         self.assertTrue((self.workspace / "tests/test_review_findings.py").is_file())
 
     def test_review_docs_worker_writes_expected_files(self) -> None:

@@ -1,2 +1,2 @@
-"""PyCursor test suite."""
+"""CodeProof test suite."""
 

@@ -1,19 +1,22 @@
 param(
     [string]$RarExecutable = "C:\Program Files\WinRAR\Rar.exe",
-    [string]$Version = "1.6.0"
+    [string]$Version = "1.7.0"
 )
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $StagingRoot = Join-Path $ProjectRoot ".sfx-stage"
-$OutputPath = Join-Path $ProjectRoot "dist\PyCursor-Setup-$Version.exe"
-$Payload = Join-Path $ProjectRoot "dist\PyCursor"
+$OutputPath = Join-Path $ProjectRoot "dist\CodeProof-Setup-$Version.exe"
+$Payload = Join-Path $ProjectRoot "dist\CodeProof"
 
-if (-not (Test-Path -LiteralPath (Join-Path $Payload "PyCursor.exe"))) {
+if (-not (Test-Path -LiteralPath (Join-Path $Payload "CodeProof.exe"))) {
     throw "Run scripts\build_windows.ps1 first."
 }
 if (-not (Test-Path -LiteralPath $RarExecutable)) {
     throw "Rar.exe not found: $RarExecutable"
+}
+if (Test-Path -LiteralPath $OutputPath) {
+    Remove-Item -LiteralPath $OutputPath -Force
 }
 
 if (Test-Path -LiteralPath $StagingRoot) {
@@ -23,13 +26,13 @@ if (Test-Path -LiteralPath $StagingRoot) {
     Remove-Item -LiteralPath $StagingRoot -Recurse -Force
 }
 New-Item -ItemType Directory -Force -Path $StagingRoot | Out-Null
-Copy-Item -LiteralPath $Payload -Destination (Join-Path $StagingRoot "PyCursor") -Recurse
+Copy-Item -LiteralPath $Payload -Destination (Join-Path $StagingRoot "CodeProof") -Recurse
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "installer\setup.cmd") -Destination $StagingRoot
 Copy-Item -LiteralPath (Join-Path $ProjectRoot "installer\install.ps1") -Destination $StagingRoot
 
 Push-Location $StagingRoot
 try {
-    & $RarExecutable a -m5 -s -r -sfx -z"$ProjectRoot\installer\sfx-config.txt" $OutputPath "PyCursor" "setup.cmd" "install.ps1"
+    & $RarExecutable a -m5 -s -r -sfx -z"$ProjectRoot\installer\sfx-config.txt" $OutputPath "CodeProof" "setup.cmd" "install.ps1"
     if ($LASTEXITCODE -ne 0) {
         throw "Rar failed with exit code $LASTEXITCODE"
     }

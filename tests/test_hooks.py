@@ -7,8 +7,8 @@ import uuid
 from pathlib import Path
 from unittest.mock import patch
 
-from pycursor.hooks import after_tool, before_tool, hooks_enabled
-from pycursor.tools import ToolError
+from codeproof.hooks import after_tool, before_tool, hooks_enabled
+from codeproof.tools import ToolError
 
 
 class PreToolUseHookTest(unittest.TestCase):

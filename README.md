@@ -1,8 +1,8 @@
-# CodeProof（原 PyCursor）
+# CodeProof
 
-一个可双击打开的本地桌面编码智能体。产品展示名为 CodeProof，Python 包和可执行
-文件仍沿用 PyCursor 以保持兼容。后端负责模型循环、四个编码工具、MCP 连接和事件
-流；Tkinter 前端只负责展示对话、文件、工具活动与 diff。
+一个可双击打开的本地桌面编码智能体。产品、Python 包、可执行文件和交付包统一命名
+为 CodeProof。后端负责模型循环、四个编码工具、MCP 连接和事件流；Tkinter 前端只负责
+展示对话、文件、工具活动与 diff，响应式 H5 共享同一后端。
 
 > 模型负责猜，码证负责查。每一步，都有证据。
 
@@ -10,16 +10,19 @@
 
 ## 下载
 
-- [GitHub Release：CodeProof 1.6.0](https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.6.0)
-- [Windows 安装程序](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/PyCursor-Setup-1.6.0.exe)
-- [Windows 免安装包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/PyCursor-Windows-x64.zip)
-- [源码与作业材料包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/PyCursor-Portable-1.6.0.zip)
-- [SHA256 校验清单](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.6.0/SHA256SUMS.txt)
+- [GitHub Release：CodeProof 1.7.0](https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.7.0)
+- [Windows 安装程序](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.7.0/CodeProof-Setup-1.7.0.exe)
+- [Windows 免安装包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.7.0/CodeProof-Windows-x64.zip)
+- [源码与作业材料包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.7.0/CodeProof-Portable-1.7.0.zip)
+- [SHA256 校验清单](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.7.0/SHA256SUMS.txt)
+
+GitHub 仓库沿用了已建好的 `PyCursor` URL，避免旧提交链接失效；软件和所有安装包名称
+均为 CodeProof。
 
 ## 换一台电脑后，三步启动
 
 1. 用 `scripts\build_windows.ps1` 和 `scripts\build_sfx_setup.ps1` 构建后，双击
-   `PyCursor-Setup-1.6.0.exe`，安装完成后打开 CodeProof。
+   `CodeProof-Setup-1.7.0.exe`，安装完成后打开 CodeProof。
 2. 点击右上角“设置”，填写 DeepSeek API Key，Base URL 保持
    `https://api.deepseek.com/v1`，模型填写 `deepseek-chat` 或账户支持的
    `deepseek-v4-flash`。
@@ -48,7 +51,7 @@
 
 ```powershell
 Copy-Item .env.example .env
-# 在 .env 填写 PYCURSOR_API_KEY
+# 在 .env 填写 CODEPROOF_API_KEY
 .\scripts\start_web.ps1 -Lan
 ```
 
@@ -79,7 +82,7 @@ Copy-Item .env.example .env
 
 ## 直接安装（推荐）
 
-双击 `dist\PyCursor-Setup-1.6.0.exe`。安装器会安装到当前用户目录、创建快捷方式并
+双击 `dist\CodeProof-Setup-1.7.0.exe`。安装器会安装到当前用户目录、创建快捷方式并
 启动窗口。默认模型为 DeepSeek `deepseek-chat`，进入右上角“设置”填写
 DeepSeek API Key 后即可使用。
 
@@ -99,15 +102,15 @@ DeepSeek API Key 后即可使用。
 2. 编辑 `.env`，至少填写：
 
    ```text
-   PYCURSOR_API_KEY=你的 DeepSeek 密钥
-   PYCURSOR_MODEL=deepseek-chat
-   PYCURSOR_BASE_URL=https://api.deepseek.com/v1
+   CODEPROOF_API_KEY=你的 DeepSeek 密钥
+   CODEPROOF_MODEL=deepseek-chat
+   CODEPROOF_BASE_URL=https://api.deepseek.com/v1
    ```
 
-3. 双击 `PyCursor.cmd`。也可以在 PowerShell 中运行：
+3. 双击 `CodeProof.cmd`。也可以在 PowerShell 中运行：
 
    ```powershell
-   python -m pycursor --workspace .\examples\workspace
+   python -m codeproof --workspace .\examples\workspace
    ```
 
 首次运行后也可以从窗口右上角“设置”修改 Key、模型、工作区、最大步数和 MCP
@@ -119,9 +122,9 @@ DeepSeek API Key 后即可使用。
 | --- | --- |
 | Base URL | `https://api.deepseek.com/v1` |
 | 模型 | `deepseek-chat` |
-| API Key | `DEEPSEEK_API_KEY` 或 `PYCURSOR_API_KEY` |
+| API Key | `DEEPSEEK_API_KEY` 或 `CODEPROOF_API_KEY` |
 
-`deepseek-chat` 支持 PyCursor 所需的工具调用。程序仍允许在“设置”中替换成其他
+`deepseek-chat` 支持 CodeProof 所需的工具调用。程序仍允许在“设置”中替换成其他
 兼容 Chat Completions 的服务，但课程演示的默认路径不依赖 GPT 模型。
 
 如果 DeepSeek 服务商明确提供 `deepseek-v4-flash`，可以在“模型”一栏直接填入：
@@ -130,7 +133,7 @@ DeepSeek API Key 后即可使用。
 deepseek-v4-flash
 ```
 
-PyCursor 不写死模型列表，只要该接口实现 `/chat/completions`、使用 Bearer Key
+CodeProof 不写死模型列表，只要该接口实现 `/chat/completions`、使用 Bearer Key
 并支持 function calling 就能工作。模型名称是否可用最终以服务商文档和账户的模型
 列表为准。
 
@@ -164,7 +167,7 @@ python scripts\replay_demo.py
 后端可以脱离桌面界面运行：
 
 ```powershell
-python -m pycursor.server --host 127.0.0.1 --port 8765 --workspace .\examples\workspace
+python -m codeproof.server --host 127.0.0.1 --port 8765 --workspace .\examples\workspace
 ```
 
 创建任务：
@@ -199,7 +202,7 @@ curl.exe -X POST http://127.0.0.1:8765/api/tasks/<task_id>/cancel
 | `edit` | 精确字符串替换 | `old` 必须唯一；零次或多次命中直接失败 |
 | `bash` | 在工作区运行命令 | 超时、输出上限、非零退出码正常回灌、可中断 |
 
-模型只提出调用意图。真正执行权在 `pycursor/tools.py` 的白名单路由中。
+模型只提出调用意图。真正执行权在 `codeproof/tools.py` 的白名单路由中。
 
 ## MCP
 
@@ -263,7 +266,7 @@ python -m app.parallel --out parallel_report.json
 对固定 bug 数据集运行独立评审规则，并生成一份 JSON 和一条汇总评论：
 
 ```powershell
-python -m pycursor review --dataset review_dataset --out review_report.json
+python -m codeproof review --dataset review_dataset --out review_report.json
 ```
 
 报告逐条列出已知 bug 是否命中、误报数、召回率和评审判定。详细说明见
@@ -289,8 +292,8 @@ python scripts\check.py
 ```
 
 脚本会创建隔离构建环境并安装 PyInstaller。Windows 目录构建位于
-`dist\PyCursor\PyCursor.exe`，可直接双击；分发压缩包位于
-`dist\PyCursor-Windows-x64.zip`。
+`dist\CodeProof\CodeProof.exe`，可直接双击；分发压缩包位于
+`dist\CodeProof-Windows-x64.zip`。
 
 安装器构建：
 
@@ -298,8 +301,8 @@ python scripts\check.py
 .\scripts\build_sfx_setup.ps1
 ```
 
-该脚本使用 WinRAR 自解压模块生成 `dist\PyCursor-Setup-1.6.0.exe`，安装到当前用户的
-`%LOCALAPPDATA%\Programs\PyCursor` 并创建桌面与开始菜单快捷方式。构建机需要 WinRAR；
+该脚本使用 WinRAR 自解压模块生成 `dist\CodeProof-Setup-1.7.0.exe`，安装到当前用户的
+`%LOCALAPPDATA%\Programs\CodeProof` 并创建桌面与开始菜单快捷方式。构建机需要 WinRAR；
 安装后的用户不需要 WinRAR、Python 或其他运行时。`scripts\installer.iss` 保留为
 Inno Setup 6 的可选替代方案。
 

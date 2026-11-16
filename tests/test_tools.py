@@ -8,7 +8,7 @@ import unittest
 import uuid
 from pathlib import Path
 
-from pycursor.tools import ToolContext, ToolError, bash, edit, read, write
+from codeproof.tools import ToolContext, ToolError, bash, edit, read, write
 
 
 class ToolsTest(unittest.TestCase):

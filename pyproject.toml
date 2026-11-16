@@ -3,8 +3,8 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pycursor"
-version = "1.6.0"
+name = "codeproof"
+version = "1.7.0"
 description = "A small desktop coding agent with four tools and MCP support"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,11 +13,11 @@ authors = [{ name = "CodeProof" }]
 dependencies = []
 
 [project.scripts]
-pycursor = "pycursor.__main__:main"
-pycursor-server = "pycursor.server:cli"
-pycursor-parallel = "app.parallel:main"
-pycursor-review = "app.review:main"
+codeproof = "codeproof.__main__:main"
+codeproof-server = "codeproof.server:cli"
+codeproof-parallel = "app.parallel:main"
+codeproof-review = "app.review:main"
 
 [tool.setuptools.packages.find]
-include = ["pycursor*", "app*"]
+include = ["codeproof*", "app*"]
 
