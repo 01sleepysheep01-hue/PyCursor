@@ -8,6 +8,14 @@
 
 实现对应课程第 35 页大作业及第 36–39 页验收要求。
 
+## 下载
+
+- [GitHub Release：CodeProof 1.5.0](https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.5.0)
+- [Windows 安装程序](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/PyCursor-Setup-1.5.0.exe)
+- [Windows 免安装包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/PyCursor-Windows-x64.zip)
+- [源码与作业材料包](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/PyCursor-Portable-1.5.0.zip)
+- [SHA256 校验清单](https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/SHA256SUMS.txt)
+
 ## 换一台电脑后，三步启动
 
 1. 用 `scripts\build_windows.ps1` 和 `scripts\build_sfx_setup.ps1` 构建后，双击

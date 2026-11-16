@@ -24,19 +24,20 @@
 
 - [x] 在 GitHub 创建 public 仓库
 - [x] 按真实开发过程形成 45 次 commit，跨度 12 天（2026-11-03 至 11-15）
-- [ ] 创建 `v1.5.0` tag
-- [ ] 创建 GitHub Release 并上传 `dist/PyCursor-Setup-1.5.0.exe`
+- [x] 创建并推送 annotated tag `v1.5.0`
+- [x] 创建 GitHub Release 并上传安装程序、免安装包、源码包与 SHA256 清单
 - [ ] 将仓库链接与 Release 链接填写到课程表格
 - [ ] 按 `docs/demo.md` 用自己的电脑完成 5 分钟现场演示
 
-公开仓库和 Release 需要账户授权，且提交历史不能由打包工具伪造。
+公开仓库、tag 和 Release 均已完成。课程表格需要登录课程系统后手工粘贴；现场演示需
+在你的电脑上完成。提交历史为真实开发记录，未伪造或回填日期。
 
 ## 本单元验收数据
 
 - D 可验证性：L3，97.1 分，一条命令测试为真，报告见 `readiness_report.json`。
 - E 并行：2 个 worker 均通过测试，合并冲突 0 个，报告见 `parallel_report.json`。
 - F 评审：已知 bug 命中 8/8，召回率 100%，误报 0 条，见 `review_report.json`。
-- 当前源码版本为 1.5.0；发布前仍需用最终源码重新构建安装包，不能沿用旧版 dist。
+- 当前源码版本为 1.5.0；最终源码已重新构建，安装版和免安装版均完成窗口冒烟测试。
 
 ## 现场演示前检查
 
@@ -46,4 +47,10 @@
 4. 确认模型为服务商实际开放的 `deepseek-chat` 或 `deepseek-v4-flash`。
 5. 用“设置”选择演示工作区。
 6. 打开 `docs/demo.md`，按 5 分钟流程练习。
+
+## 提交链接
+
+- GitHub 仓库：https://github.com/01sleepysheep01-hue/PyCursor
+- GitHub Release：https://github.com/01sleepysheep01-hue/PyCursor/releases/tag/v1.5.0
+- 安装程序：https://github.com/01sleepysheep01-hue/PyCursor/releases/download/v1.5.0/PyCursor-Setup-1.5.0.exe
 
